@@ -15,7 +15,7 @@ src/
   network/            NetworkClient interface + createFetchNetworkClient (the only fetch call);
                       ScreenwriterClient (typed method per route) + API_ROUTE_METHODS (route -> method map)
   hooks/              query-keys.ts (central factory), query-config.ts, client-context.ts (Provider + useScreenwriterClient),
-                      one hook file per resource group (account, projects, documents, templates, versions, snapshots)
+                      one hook file per resource group (account, projects, documents, templates, versions, snapshots, import-export)
   sync/               SyncClient (framework-free), awareness.ts (JSON relay format + RemoteAwareness), backoff.ts
 tests/                contract, backoff/awareness units, hooks (fake network), integration (spawns the real API)
 ```
@@ -31,6 +31,7 @@ tests/                contract, backoff/awareness units, hooks (fake network), i
 - **DI**: `ScreenwriterClient({network, baseUrl, getToken})`. `baseUrl` is the origin (no `/api/v1`). `getToken(forceRefresh)` is retried once with `true` after a 401. Envelope `data` is unwrapped; failures throw `ApiError` (`code` is an API error code or `NETWORK_ERROR`/`BAD_RESPONSE`).
 - **Route contract**: `API_ROUTE_METHODS` is a `Record<ApiRouteName, method | null>`; a new route in `screenwriter_types` fails typecheck until mapped. `null` = declared but not served (B5: commands/outline/scene).
 - **Hooks** read the client from `<ScreenwriterClientProvider client>` (inside a `QueryClientProvider`). Keys come from `queryKeys`; mutations invalidate the affected lists/details (create project -> project lists; restore version / open snapshot -> whole document family).
+- **Import/export**: `importDocument(pid, {filename, bytes|contentB64, ...})` base64s with `util/base64.ts` (btoa/atob, no `Buffer`); `exportDocument(did, format)` returns decoded `{filename, mimeType, bytes, report, format}`; `getFormats()`. Hooks `useFormats`, `useImportDocument(pid)` (invalidates document lists), `useExportDocument(did)`.
 - **Binary state**: `getDocumentState`/`getSnapshotState`/`getVersionState` return `{state: Uint8Array (Yjs V2), epoch, stateVector}`.
 - **SyncClient**: see the class doc. Events via `on(event, fn)`: `status`, `docStatus`, `epochChanged`, `authError`, `subscribeError`, `rejected`, `roleChanged`, `documentDeleted`, `stopped`, `closed`, `error`. Per-document handle: `status` (`syncing|synced`), `state` (`pending|active|stale|failed`), `unackedCount`, `setLocalAwareness`, `unsubscribe`.
   - Yjs frames are V2. Remote updates are applied with an internal origin; only non-remote-origin doc updates are sent.

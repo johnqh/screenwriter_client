@@ -25,6 +25,8 @@ export const queryKeys = {
   documentState: (did: string) => [...root(), "document", did, "state"] as const,
   documentContent: (did: string) => [...root(), "document", did, "content"] as const,
 
+  formats: () => [...root(), "formats"] as const,
+
   templates: (category?: string) => [...root(), "templates", category ?? null] as const,
   templatesAll: () => [...root(), "templates"] as const,
   template: (idOrKey: string) => [...root(), "template", idOrKey] as const,

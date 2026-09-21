@@ -6,7 +6,12 @@ import {
   type DocumentDetail,
   type DocumentListQuery,
   type DocumentMeta,
+  type DocumentImportRequest,
+  type DocumentImportResult,
   type DocumentUpdateRequest,
+  type ExportFormatId,
+  type ConversionReport,
+  type FormatInfo,
   type Me,
   type MeUpdateRequest,
   type Paginated,
@@ -32,6 +37,7 @@ import {
 } from "@sudobility/screenwriter_types";
 import type { DocumentJSON, TemplateJSON } from "@sudobility/writing_core";
 import { ApiError } from "../errors";
+import { base64ToBytes, bytesToBase64, type BinaryInput, toUint8Array } from "../util/base64";
 import type { HttpMethod, NetworkClient, NetworkResponse } from "./network-client";
 
 export interface ScreenwriterClientOptions {
@@ -51,6 +57,19 @@ export interface BinaryState {
   epoch: number;
   /** Only `/documents/:did/state` sends it. */
   stateVector: Uint8Array | null;
+}
+
+/** `importDocument` input: the file as `bytes` (or an already-encoded `contentB64`) plus the request options. */
+export type ImportDocumentInput = Omit<DocumentImportRequest, "contentB64"> &
+  ({ bytes: BinaryInput; contentB64?: undefined } | { contentB64: string; bytes?: undefined });
+
+export interface ExportedDocument {
+  filename: string;
+  mimeType: string;
+  /** Decoded file bytes. */
+  bytes: Uint8Array;
+  report: ConversionReport;
+  format: ExportFormatId;
 }
 
 type Query = Record<string, string | number | boolean | undefined>;
@@ -210,6 +229,26 @@ export class ScreenwriterClient {
     return this.json<DocumentJSON>("GET", `/documents/${enc(did)}/content`);
   }
 
+  /** Import a script file into a project. The server detects the format from the content. */
+  importDocument(pid: string, input: ImportDocumentInput) {
+    const { bytes, contentB64, ...rest } = input;
+    const body: DocumentImportRequest = { ...rest, contentB64: contentB64 ?? bytesToBase64(toUint8Array(bytes as BinaryInput)) };
+    return this.json<DocumentImportResult>("POST", `/projects/${enc(pid)}/documents/import`, undefined, body);
+  }
+  /** Export the live document; the file comes back decoded. */
+  async exportDocument(did: string, format: ExportFormatId): Promise<ExportedDocument> {
+    const r = await this.json<{ filename: string; mimeType: string; contentB64: string; report: ConversionReport; format: ExportFormatId }>(
+      "POST",
+      `/documents/${enc(did)}/export`,
+      undefined,
+      { format }
+    );
+    return { filename: r.filename, mimeType: r.mimeType, bytes: base64ToBytes(r.contentB64), report: r.report, format: r.format };
+  }
+  getFormats() {
+    return this.json<FormatInfo[]>("GET", "/formats");
+  }
+
   // ─── templates ───────────────────────────────────────────────────────────
 
   listTemplates(category?: string) {
@@ -289,6 +328,9 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   documentRestore: "restoreDocument",
   documentState: "getDocumentState",
   documentContent: "getDocumentContent",
+  documentImport: "importDocument",
+  documentExport: "exportDocument",
+  formatsList: "getFormats",
   templatesList: "listTemplates",
   templateGet: "getTemplate",
   sync: "syncUrl",

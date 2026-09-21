@@ -17,6 +17,12 @@ describe("route contract", () => {
     }
   });
 
+  it("covers the import and export routes", () => {
+    expect(API_ROUTE_METHODS.documentImport).toBe("importDocument");
+    expect(API_ROUTE_METHODS.documentExport).toBe("exportDocument");
+    expect(API_ROUTE_METHODS.formatsList).toBe("getFormats");
+  });
+
   it("uses each method once", () => {
     const methods = Object.values(API_ROUTE_METHODS).filter(m => m !== null);
     expect(new Set(methods).size).toBe(methods.length);
