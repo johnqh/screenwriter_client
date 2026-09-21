@@ -40,6 +40,10 @@ tests/                contract, backoff/awareness units, hooks (fake network), i
   - Close codes: 4401 refresh token once then stop, 4403/4406 stop (`stopped` event), 4400 x3 in 10 min stop, 4429 backs off at least 5 s, 1001 honours `serverShutdown.reconnectAfterMs`, everything else full-jitter exponential backoff (attempt resets after a 60 s healthy connection). `online` event triggers an immediate reconnect.
   - The subprotocol is deliberately NOT offered: the API does not echo `fadewright-sync.v1`, and browsers fail a socket whose offered protocol is not selected.
 
+## AI (B7)
+
+`getAiStatus` (`GET /ai/status`: `{available, mode: live|fixture|unavailable}`), `startAiJob`, `listAiJobs`, `getAiJob`, `cancelAiJob`, `listSuggestionSets`, `getSuggestionSet`, `acceptSuggestions` (409 `CONTENT_CHANGED` with `details.suggestionIds` is an `ApiError`), `rejectSuggestions`. Hooks in `hooks/use-ai.ts`: `useAiStatus`, `useStartAiJob`, `useAiJob(jobId)` (polls 1.5 s while queued/running), `useAiJobs`, `useCancelAiJob`, `useSuggestionSets`, `useSuggestionSet`, `useAcceptSuggestions`, `useRejectSuggestions`. Routes the client does not wrap (commands, outline, scene, scenesBatch, elementsBatch, API keys) are `null` in `API_ROUTE_METHODS`.
+
 ## Single Yjs (important)
 
 `yjs` and `lib0` resolve to `../writing_core/node_modules/` through a two-entry `paths` mapping (extensionless `dist/yjs` first so Bun loads `yjs.mjs`, then the directory for types). `vitest.config.ts` mirrors it as aliases; keep both in sync. The integration test decodes API bytes with this repo's own `yjs` import to prove one instance. Same recipe as `screenwriter_api/CLAUDE.md`.
