@@ -30,6 +30,14 @@ export interface SyncClientOptions {
   url: string;
   /** Token supplier; `forceRefresh` is true on the single retry after close 4401. Null = signed out. */
   getToken: (forceRefresh?: boolean) => Promise<string | null>;
+  /**
+   * `firebase` (default; also the dev bypass and, for MCP, `apikey` is server-side only) or `link`: then `getToken` must return
+   * a `linkSession` (`ScreenwriterClient.unlockShareLink`), which lasts 15 minutes: the client re-sends it every 10 minutes, so
+   * `getToken` should renew it. A link session opens only its link's target, as viewer or (comment link, signed in) commenter.
+   */
+  scheme?: "firebase" | "link";
+  /** Unlock-session token for a locked document (`ScreenwriterClient.createUnlockSession`), sent in the auth frame. */
+  getUnlockToken?: () => string | null;
   WebSocketImpl?: typeof WebSocket;
   deviceId?: string;
   installId?: string;
@@ -67,7 +75,11 @@ export interface SyncClientEvents {
   authError: { code: string; message: string };
   subscribeError: { documentId: string; code: string; detail?: unknown };
   rejected: { documentId: string; clientSeq: number; code: string; detail?: unknown };
-  roleChanged: { documentId: string; role: string };
+  /**
+   * The server re-resolved your role on this document (member role change, grant change or revoke). `role: "none"` means
+   * access is gone: the server closes the socket next (4403), so expect `stopped`. `markPermissions` says what the role may write.
+   */
+  roleChanged: { documentId: string; role: string; markPermissions?: unknown };
   documentDeleted: { documentId: string; byUserId: string };
   /** Fatal: the client will not reconnect on its own. */
   stopped: { reason: string; code?: number };
@@ -103,6 +115,8 @@ interface Sub {
 }
 
 const REAUTH_MS = 50 * 60_000;
+/** A link session lasts 15 minutes: renew well before that. */
+const LINK_REAUTH_MS = 10 * 60_000;
 const HEALTHY_MS = 60_000;
 const MALFORMED_WINDOW_MS = 10 * 60_000;
 /** Client-initiated close for our own timeouts (client codes must be 1000 or 3000-4999). */
@@ -301,12 +315,13 @@ export class SyncClient {
       channelId: 0,
       type: "auth",
       payload: {
-        scheme: "firebase",
+        scheme: this.opts.scheme ?? "firebase",
         token,
         deviceId: this.opts.deviceId ?? "web",
         installId: this.opts.installId ?? "web",
         clientVersion: this.opts.clientVersion ?? "screenwriter_client/0.1.0",
         schemaVersion: this.opts.schemaVersion ?? 1,
+        ...(this.opts.getUnlockToken?.() ? { unlockToken: this.opts.getUnlockToken()! } : {}),
       },
     });
     this.authTimer = setTimeout(() => {
@@ -417,7 +432,7 @@ export class SyncClient {
         return;
       }
       case "roleChanged":
-        this.emit("roleChanged", { documentId: sub.documentId, role: frame.payload.role });
+        this.emit("roleChanged", { documentId: sub.documentId, role: frame.payload.role, markPermissions: frame.payload.markPermissions });
         return;
       case "documentDeleted":
         sub.state = "failed";
@@ -549,7 +564,7 @@ export class SyncClient {
       void this.opts.getToken(false).then(token => {
         if (token) this.send({ channelId: 0, type: "reauth", payload: { token } });
       }, () => undefined);
-    }, REAUTH_MS);
+    }, this.opts.scheme === "link" ? LINK_REAUTH_MS : REAUTH_MS);
   }
 
   private stopTimers(): void {

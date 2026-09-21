@@ -24,7 +24,7 @@ function fakeNetwork() {
         body: new TextEncoder().encode(JSON.stringify({ success: true, data })),
       });
       if (req.method === "POST") {
-        const p = { id: `prj_${projects.length + 1}`, ...JSON.parse(req.body ?? "{}") };
+        const p = { id: `prj_${projects.length + 1}`, ...JSON.parse((req.body as string | undefined) ?? "{}") };
         projects.push(p);
         return json(201, p);
       }
@@ -100,7 +100,7 @@ describe("API key hooks", () => {
           body: new TextEncoder().encode(JSON.stringify({ success: true, data })),
         });
         if (req.method === "POST") {
-          const row = { id: "key_1", name: JSON.parse(req.body ?? "{}").name, prefix: "abcd1234", revokedAt: null };
+          const row = { id: "key_1", name: JSON.parse((req.body as string | undefined) ?? "{}").name, prefix: "abcd1234", revokedAt: null };
           rows.push(row);
           return env(201, { ...row, key: "fwk_abcd1234_secret" });
         }

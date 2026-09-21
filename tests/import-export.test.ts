@@ -21,7 +21,7 @@ function fake() {
   const network: NetworkClient = {
     async request(req) {
       const path = new URL(req.url).pathname;
-      calls.push({ path, body: req.body ? JSON.parse(req.body) : undefined });
+      calls.push({ path, body: req.body ? JSON.parse(req.body as string) : undefined });
       const ok = (data: unknown) => ({ status: 200, headers: {}, body: new TextEncoder().encode(JSON.stringify({ success: true, data })) });
       if (path.endsWith("/documents/import")) {
         docs.push({ id: "doc_1", title: "Imported" });
