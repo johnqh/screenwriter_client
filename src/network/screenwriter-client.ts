@@ -1,5 +1,12 @@
 import {
   API_BASE_PATH,
+  type AiJob,
+  type AiJobCreated,
+  type AiJobCreateRequest,
+  type AiStatus,
+  type SuggestionAcceptResponse,
+  type SuggestionSet,
+  type SuggestionSetSummary,
   type ApiRouteName,
   type CursorQuery,
   type DocumentCreateRequest,
@@ -302,6 +309,41 @@ export class ScreenwriterClient {
   forkSnapshot(sid: string, body: SnapshotForkRequest) {
     return this.json<DocumentMeta>("POST", `/snapshots/${enc(sid)}/fork`, undefined, body);
   }
+
+  // ─── AI (B7) ─────────────────────────────────────────────────────────────
+
+  /** Whether AI can run: `fixture` = canned test-mode answers, `live` = ShapeShyft, `unavailable` = not configured. */
+  getAiStatus() {
+    return this.json<AiStatus>("GET", "/ai/status");
+  }
+  /** Starts a review or polish job (202). Poll `getAiJob`. */
+  startAiJob(did: string, body: AiJobCreateRequest) {
+    return this.json<AiJobCreated>("POST", `/documents/${enc(did)}/ai/jobs`, undefined, body);
+  }
+  /** Recent jobs of a document, newest first (a finished report is in `result`). */
+  listAiJobs(did: string, limit?: number) {
+    return this.json<{ items: AiJob[] }>("GET", `/documents/${enc(did)}/ai/jobs`, { limit });
+  }
+  getAiJob(jobId: string) {
+    return this.json<AiJob>("GET", `/ai/jobs/${enc(jobId)}`);
+  }
+  cancelAiJob(jobId: string) {
+    return this.json<AiJob>("POST", `/ai/jobs/${enc(jobId)}/cancel`);
+  }
+  listSuggestionSets(did: string) {
+    return this.json<{ items: SuggestionSetSummary[] }>("GET", `/documents/${enc(did)}/ai/suggestion-sets`);
+  }
+  getSuggestionSet(ssid: string) {
+    return this.json<SuggestionSet>("GET", `/ai/suggestion-sets/${enc(ssid)}`);
+  }
+  /** Atomic: one stale suggestion refuses the whole batch with `ApiError` 409 `CONTENT_CHANGED` (`details.suggestionIds`). */
+  acceptSuggestions(ssid: string, suggestionIds: string[]) {
+    return this.json<SuggestionAcceptResponse>("POST", `/ai/suggestion-sets/${enc(ssid)}/accept`, undefined, { suggestionIds });
+  }
+  /** No ids rejects every pending suggestion in the set. */
+  rejectSuggestions(ssid: string, suggestionIds?: string[]) {
+    return this.json<SuggestionSet>("POST", `/ai/suggestion-sets/${enc(ssid)}/reject`, undefined, suggestionIds ? { suggestionIds } : {});
+  }
 }
 
 /**
@@ -345,8 +387,25 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   snapshotContent: "getSnapshotContent",
   snapshotOpen: "openSnapshot",
   snapshotFork: "forkSnapshot",
-  // B5: declared in API_ROUTES but not served by the API yet
+  // B5/B6: declared in API_ROUTES but not wrapped by this client yet
   commands: null,
   outline: null,
   scene: null,
+  scenesBatch: null,
+  elementsBatch: null,
+  // B6 personal API keys: not used by the web app
+  apiKeysList: null,
+  apiKeyCreate: null,
+  apiKeyUpdate: null,
+  apiKeyRevoke: null,
+  // B7 AI
+  aiStatus: "getAiStatus",
+  aiJobCreate: "startAiJob",
+  aiJobsList: "listAiJobs",
+  aiJobGet: "getAiJob",
+  aiJobCancel: "cancelAiJob",
+  aiSuggestionSetsList: "listSuggestionSets",
+  aiSuggestionSetGet: "getSuggestionSet",
+  aiSuggestionSetAccept: "acceptSuggestions",
+  aiSuggestionSetReject: "rejectSuggestions",
 };

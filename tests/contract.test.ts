@@ -9,8 +9,10 @@ describe("route contract", () => {
       .filter(([, m]) => m === null)
       .map(([r]) => r)
       .sort();
-    // B5 routes are declared but the API does not serve them yet
-    expect(unserved).toEqual(["commands", "outline", "scene"]);
+    // declared in API_ROUTES but not wrapped by this client (B5 commands and reads, B6 personal API keys)
+    expect(unserved).toEqual(
+      ["apiKeyCreate", "apiKeyRevoke", "apiKeyUpdate", "apiKeysList", "commands", "elementsBatch", "outline", "scene", "scenesBatch"]
+    );
     for (const [route, method] of Object.entries(API_ROUTE_METHODS)) {
       if (method === null) continue;
       expect(typeof ScreenwriterClient.prototype[method], `${route} -> ${String(method)}`).toBe("function");
@@ -21,6 +23,12 @@ describe("route contract", () => {
     expect(API_ROUTE_METHODS.documentImport).toBe("importDocument");
     expect(API_ROUTE_METHODS.documentExport).toBe("exportDocument");
     expect(API_ROUTE_METHODS.formatsList).toBe("getFormats");
+  });
+
+  it("covers the AI routes", () => {
+    expect(API_ROUTE_METHODS.aiStatus).toBe("getAiStatus");
+    expect(API_ROUTE_METHODS.aiJobCreate).toBe("startAiJob");
+    expect(API_ROUTE_METHODS.aiSuggestionSetAccept).toBe("acceptSuggestions");
   });
 
   it("uses each method once", () => {

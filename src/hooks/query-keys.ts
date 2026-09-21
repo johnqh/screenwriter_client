@@ -40,4 +40,10 @@ export const queryKeys = {
   snapshot: (sid: string) => [...root(), "snapshot", sid] as const,
   snapshotState: (sid: string) => [...root(), "snapshot", sid, "state"] as const,
   snapshotContent: (sid: string) => [...root(), "snapshot", sid, "content"] as const,
+
+  aiStatus: () => [...root(), "ai-status"] as const,
+  aiJob: (jobId: string) => [...root(), "ai-job", jobId] as const,
+  aiJobs: (did: string) => [...root(), "ai-jobs", did] as const,
+  suggestionSets: (did: string) => [...root(), "suggestion-sets", did] as const,
+  suggestionSet: (ssid: string) => [...root(), "suggestion-set", ssid] as const,
 } as const;

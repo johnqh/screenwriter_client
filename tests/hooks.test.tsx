@@ -54,3 +54,36 @@ describe("hooks", () => {
     ]);
   });
 });
+
+describe("AI hooks", () => {
+  it("useAiJob polls until the job is terminal, then stops; acceptSuggestions surfaces CONTENT_CHANGED", async () => {
+    const { useAiJob, useAcceptSuggestions, isApiError } = await import("../src");
+    let polls = 0;
+    const network: NetworkClient = {
+      async request(req) {
+        const path = new URL(req.url).pathname;
+        const env = (status: number, body: object) => ({ status, headers: {}, body: new TextEncoder().encode(JSON.stringify(body)) });
+        if (path.endsWith("/accept"))
+          return env(409, { success: false, error: "changed", code: "CONTENT_CHANGED", details: { suggestionIds: ["sug_1"] } });
+        polls++;
+        return env(200, { success: true, data: { id: "job_1", status: polls < 3 ? "running" : "succeeded" } });
+      },
+    };
+    const client = new ScreenwriterClient({ network, baseUrl: "http://x", getToken: async () => "t" });
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children?: ReactNode }) =>
+      createElement(QueryClientProvider, { client: qc }, createElement(ScreenwriterClientProvider, { client, children }));
+    const job = renderHook(() => useAiJob("job_1", 20), { wrapper });
+    await waitFor(() => expect(job.result.current.data?.status).toBe("succeeded"));
+    const seen = polls;
+    await new Promise(r => setTimeout(r, 120));
+    expect(polls).toBe(seen);
+
+    const accept = renderHook(() => useAcceptSuggestions("doc_1", "sset_1"), { wrapper });
+    accept.result.current.mutate(["sug_1"]);
+    await waitFor(() => expect(accept.result.current.isError).toBe(true));
+    const err = accept.result.current.error;
+    expect(isApiError(err) && err.code).toBe("CONTENT_CHANGED");
+    expect(isApiError(err) && err.details?.suggestionIds).toEqual(["sug_1"]);
+  });
+});
