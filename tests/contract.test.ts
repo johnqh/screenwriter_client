@@ -11,7 +11,7 @@ describe("route contract", () => {
       .sort();
     // declared in API_ROUTES but not wrapped by this client (B5 commands and reads, B6 personal API keys)
     expect(unserved).toEqual(
-      ["apiKeyCreate", "apiKeyRevoke", "apiKeyUpdate", "apiKeysList", "commands", "elementsBatch", "outline", "scene", "scenesBatch"]
+      ["commands", "elementsBatch", "outline", "scene", "scenesBatch"]
     );
     for (const [route, method] of Object.entries(API_ROUTE_METHODS)) {
       if (method === null) continue;
@@ -23,6 +23,12 @@ describe("route contract", () => {
     expect(API_ROUTE_METHODS.documentImport).toBe("importDocument");
     expect(API_ROUTE_METHODS.documentExport).toBe("exportDocument");
     expect(API_ROUTE_METHODS.formatsList).toBe("getFormats");
+  });
+
+  it("covers the API key routes", () => {
+    expect(API_ROUTE_METHODS.apiKeysList).toBe("listApiKeys");
+    expect(API_ROUTE_METHODS.apiKeyCreate).toBe("createApiKey");
+    expect(API_ROUTE_METHODS.apiKeyRevoke).toBe("revokeApiKey");
   });
 
   it("covers the AI routes", () => {

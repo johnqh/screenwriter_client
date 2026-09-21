@@ -9,3 +9,4 @@ export * from "./use-versions";
 export * from "./use-snapshots";
 export * from "./use-import-export";
 export * from "./use-ai";
+export * from "./use-api-keys";

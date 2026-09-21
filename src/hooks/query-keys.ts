@@ -41,6 +41,7 @@ export const queryKeys = {
   snapshotState: (sid: string) => [...root(), "snapshot", sid, "state"] as const,
   snapshotContent: (sid: string) => [...root(), "snapshot", sid, "content"] as const,
 
+  apiKeys: () => [...root(), "api-keys"] as const,
   aiStatus: () => [...root(), "ai-status"] as const,
   aiJob: (jobId: string) => [...root(), "ai-job", jobId] as const,
   aiJobs: (did: string) => [...root(), "ai-jobs", did] as const,

@@ -4,6 +4,11 @@ import {
   type AiJobCreated,
   type AiJobCreateRequest,
   type AiStatus,
+  type ApiKeyCreated,
+  type ApiKeyCreateRequest,
+  type ApiKeyRevokeResponse,
+  type ApiKeySummary,
+  type ApiKeyUpdateRequest,
   type SuggestionAcceptResponse,
   type SuggestionSet,
   type SuggestionSetSummary,
@@ -310,6 +315,23 @@ export class ScreenwriterClient {
     return this.json<DocumentMeta>("POST", `/snapshots/${enc(sid)}/fork`, undefined, body);
   }
 
+  // ─── API keys (B6) ───────────────────────────────────────────────────────
+
+  /** The caller's personal API keys (never the secrets). User sign-in only: a key gets 403. */
+  listApiKeys() {
+    return this.json<ApiKeySummary[]>("GET", "/api-keys");
+  }
+  /** The full `key` is in this response and never again. */
+  createApiKey(body: ApiKeyCreateRequest) {
+    return this.json<ApiKeyCreated>("POST", "/api-keys", undefined, body);
+  }
+  updateApiKey(kid: string, body: ApiKeyUpdateRequest) {
+    return this.json<ApiKeySummary>("PATCH", `/api-keys/${enc(kid)}`, undefined, body);
+  }
+  revokeApiKey(kid: string) {
+    return this.json<ApiKeyRevokeResponse>("DELETE", `/api-keys/${enc(kid)}`);
+  }
+
   // ─── AI (B7) ─────────────────────────────────────────────────────────────
 
   /** Whether AI can run: `fixture` = canned test-mode answers, `live` = ShapeShyft, `unavailable` = not configured. */
@@ -394,10 +416,10 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   scenesBatch: null,
   elementsBatch: null,
   // B6 personal API keys: not used by the web app
-  apiKeysList: null,
-  apiKeyCreate: null,
-  apiKeyUpdate: null,
-  apiKeyRevoke: null,
+  apiKeysList: "listApiKeys",
+  apiKeyCreate: "createApiKey",
+  apiKeyUpdate: "updateApiKey",
+  apiKeyRevoke: "revokeApiKey",
   // B7 AI
   aiStatus: "getAiStatus",
   aiJobCreate: "startAiJob",

@@ -87,3 +87,43 @@ describe("AI hooks", () => {
     expect(isApiError(err) && err.details?.suggestionIds).toEqual(["sug_1"]);
   });
 });
+
+describe("API key hooks", () => {
+  it("useCreateApiKey returns the one-time key and refreshes the list, which never carries it", async () => {
+    const { useApiKeys, useCreateApiKey, useRevokeApiKey } = await import("../src");
+    const rows: Array<Record<string, unknown>> = [];
+    const network: NetworkClient = {
+      async request(req) {
+        const env = (status: number, data: unknown) => ({
+          status,
+          headers: {},
+          body: new TextEncoder().encode(JSON.stringify({ success: true, data })),
+        });
+        if (req.method === "POST") {
+          const row = { id: "key_1", name: JSON.parse(req.body ?? "{}").name, prefix: "abcd1234", revokedAt: null };
+          rows.push(row);
+          return env(201, { ...row, key: "fwk_abcd1234_secret" });
+        }
+        if (req.method === "DELETE") {
+          rows[0]!.revokedAt = "now";
+          return env(200, { revokedAt: "now" });
+        }
+        return env(200, [...rows]);
+      },
+    };
+    const client = new ScreenwriterClient({ network, baseUrl: "http://x", getToken: async () => "t" });
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children?: ReactNode }) =>
+      createElement(QueryClientProvider, { client: qc }, createElement(ScreenwriterClientProvider, { client, children }));
+    const list = renderHook(() => useApiKeys(), { wrapper });
+    await waitFor(() => expect(list.result.current.data).toEqual([]));
+    const create = renderHook(() => useCreateApiKey(), { wrapper });
+    create.result.current.mutate({ name: "n", workspaceId: "ws_1", scope: "read" });
+    await waitFor(() => expect(create.result.current.data?.key).toBe("fwk_abcd1234_secret"));
+    await waitFor(() => expect(list.result.current.data).toHaveLength(1));
+    expect(JSON.stringify(list.result.current.data)).not.toContain("secret");
+    const revoke = renderHook(() => useRevokeApiKey(), { wrapper });
+    revoke.result.current.mutate("key_1");
+    await waitFor(() => expect(list.result.current.data?.[0]?.revokedAt).toBe("now"));
+  });
+});
