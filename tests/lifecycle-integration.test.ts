@@ -54,7 +54,7 @@ const finished = (c: ScreenwriterClient, job: Job) =>
 beforeAll(async () => {
   server = spawn("bun", ["run", "src/index.ts"], {
     cwd: API_DIR,
-    env: { ...process.env, PORT: String(PORT), DATABASE_URL: DB_URL, PUBLIC_APP_URL: "http://localhost:5173", AI_TEST_MODE: "1", LOG_LEVEL: "error", JOB_POLL_MS: "50", NORMALIZE_DEBOUNCE_MS: "600000" },
+    env: { ...process.env, PORT: String(PORT), DATABASE_URL: DB_URL, PUBLIC_APP_URL: "http://localhost:5143", AI_TEST_MODE: "1", LOG_LEVEL: "error", JOB_POLL_MS: "50", NORMALIZE_DEBOUNCE_MS: "600000" },
     stdio: "ignore",
   });
   for (let i = 0; i < 200; i++) {

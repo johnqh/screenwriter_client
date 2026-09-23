@@ -303,7 +303,7 @@ import {
 
 export interface ScreenwriterClientOptions {
   network: NetworkClient;
-  /** API origin, e.g. `http://localhost:8042` (no `/api/v1`). */
+  /** API origin, e.g. `http://localhost:8036` (no `/api/v1`). */
   baseUrl: string;
   /**
    * Bearer token supplier. Called per request; `forceRefresh` is true on the one retry after a 401.

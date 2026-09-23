@@ -34,7 +34,7 @@ beforeAll(async () => {
   server = spawn("bun", ["run", "src/index.ts"], {
     cwd: API_DIR,
     env: {
-      ...process.env, PORT: String(PORT), DATABASE_URL: DB_URL, PUBLIC_APP_URL: "http://localhost:5173", AI_TEST_MODE: "1", LOG_LEVEL: "error",
+      ...process.env, PORT: String(PORT), DATABASE_URL: DB_URL, PUBLIC_APP_URL: "http://localhost:5143", AI_TEST_MODE: "1", LOG_LEVEL: "error",
       JOB_POLL_MS: "50", NORMALIZE_DEBOUNCE_MS: "600000", VERSION_POINT_INTERVAL_S: "1",
     },
     stdio: "ignore",

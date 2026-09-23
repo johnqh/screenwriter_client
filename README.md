@@ -11,7 +11,7 @@ import * as Y from "yjs";
 import { createFetchNetworkClient, ScreenwriterClient, SyncClient } from "@sudobility/screenwriter_client";
 
 const getToken = async () => "dev:u1:a@b.co"; // Firebase ID token in production
-const api = new ScreenwriterClient({ network: createFetchNetworkClient(), baseUrl: "http://localhost:8042", getToken });
+const api = new ScreenwriterClient({ network: createFetchNetworkClient(), baseUrl: "http://localhost:8036", getToken });
 
 const me = await api.me();
 const project = await api.createProject(me.personalWorkspaceId, { name: "My film" });

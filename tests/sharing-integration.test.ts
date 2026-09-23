@@ -55,7 +55,7 @@ beforeAll(async () => {
       ...process.env,
       PORT: String(PORT),
       DATABASE_URL: DB_URL,
-      PUBLIC_APP_URL: "http://localhost:5173",
+      PUBLIC_APP_URL: "http://localhost:5143",
       AI_TEST_MODE: "1",
       LOG_LEVEL: "error",
       INVITATION_OUTBOX_FILE: OUTBOX,
