@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AiJob, AiJobCreateRequest } from "@sudobility/screenwriter_types";
+import type {
+  AiConsentAcceptRequest,
+  AiEstimateRequest,
+  AiJob,
+  AiJobCreateRequest,
+  SuggestionDecideRequest,
+} from "@sudobility/screenwriter_types";
 import { useScreenwriterClient } from "./client-context";
 import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
@@ -112,5 +118,94 @@ export function useRejectSuggestions(did: string, ssid: string | null | undefine
         qc.invalidateQueries({ queryKey: queryKeys.suggestionSets(did) }),
         qc.invalidateQueries({ queryKey: queryKeys.suggestionSet(ssid ?? "") }),
       ]),
+  });
+}
+
+/** Combined accept-and-reject in one call (`dryRun`, `"allPending"`); see `useAcceptSuggestions` for invalidation reasoning. */
+export function useDecideSuggestions(did: string, ssid: string | null | undefined) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SuggestionDecideRequest) => client.decideSuggestions(ssid as string, body),
+    onSettled: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: queryKeys.suggestionSets(did) }),
+        qc.invalidateQueries({ queryKey: queryKeys.suggestionSet(ssid ?? "") }),
+      ]),
+  });
+}
+
+// ─── B17: consent, estimate, activity, reports ────────────────────────────
+
+export function useAiConsent() {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.aiConsent(),
+    queryFn: () => client.getAiConsent(),
+    staleTime: STALE_TIMES.TEMPLATES,
+  });
+}
+
+export function useAcceptAiConsent() {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: AiConsentAcceptRequest) => client.acceptAiConsent(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.aiConsent() }),
+  });
+}
+
+/** The live credit estimate before the user confirms a job (the configure sheet). Not cached: it depends on the current document and balance. */
+export function useAiEstimate(did: string | undefined) {
+  const client = useScreenwriterClient();
+  return useMutation({
+    mutationFn: (body: AiEstimateRequest) => client.estimateAiJob(did as string, body),
+  });
+}
+
+export function useMyAiActivity(query: { limit?: number; cursor?: string; documentId?: string } = {}) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.myAiActivity(query),
+    queryFn: () => client.listMyAiActivity(query),
+    staleTime: STALE_TIMES.LISTS,
+  });
+}
+
+export function useWorkspaceAiActivity(wid: string | undefined, query: { limit?: number; cursor?: string; userId?: string; documentId?: string } = {}) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.workspaceAiActivity(wid ?? "", query),
+    queryFn: () => client.listWorkspaceAiActivity(wid as string, query),
+    staleTime: STALE_TIMES.LISTS,
+    enabled: !!wid,
+  });
+}
+
+export function useAiReports(did: string | undefined, query: { limit?: number; cursor?: string; task?: string } = {}) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.aiReports(did ?? "", query),
+    queryFn: () => client.listAiReports(did as string, query),
+    staleTime: STALE_TIMES.LISTS,
+    enabled: !!did,
+  });
+}
+
+/** A saved coverage/review result: immutable once the job succeeds, so cached indefinitely. */
+export function useAiReport(did: string | undefined, jobId: string | null | undefined) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.aiReport(jobId ?? ""),
+    queryFn: () => client.getAiReport(did as string, jobId as string),
+    staleTime: Infinity,
+    enabled: !!did && !!jobId,
+  });
+}
+
+export function useConvertAiNote(did: string) {
+  const client = useScreenwriterClient();
+  return useMutation({
+    mutationFn: ({ jobId, noteId }: { jobId: string; noteId: string }) => client.convertAiNote(did, jobId, noteId),
   });
 }

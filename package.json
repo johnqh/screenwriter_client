@@ -1,16 +1,19 @@
 {
   "name": "@sudobility/screenwriter_client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Network client, react-query hooks and Yjs sync client for Fadewright",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "private": true,
   "license": "BUSL-1.1",
   "author": "Sudobility",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@sudobility/screenwriter_types": "^0.1.1",
+    "@sudobility/writing_core": "^0.1.2"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",

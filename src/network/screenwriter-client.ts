@@ -1,5 +1,102 @@
 import {
   API_BASE_PATH,
+  ACCOUNT_DELETE_CONFIRM,
+  ASSET_PART_SIZE_BYTES,
+  ASSET_UPLOAD_CONCURRENCY,
+  type AssetAbortResponse,
+  type AssetCompleteRequest,
+  type AssetDeleteResponse,
+  type AssetDetail,
+  type AssetKind,
+  type AssetLink,
+  type AssetLinkCreateRequest,
+  type AssetLinkDeleteResponse,
+  type AssetLinkUpdateRequest,
+  type AssetLinkWithStaleness,
+  type AssetListItem,
+  type AssetListQuery,
+  type AssetPartUrl,
+  type AssetPartsRequest,
+  type AssetPartsResponse,
+  type AssetProvenanceInput,
+  type AssetRights,
+  type AssetSummary,
+  type AssetUpdateRequest,
+  type AssetUploadInit,
+  type AssetUploadRequest,
+  type AssetUploadStatus,
+  type AssetUrlQuery,
+  type AssetUrlResponse,
+  type DocumentAssetLinksQuery,
+  type DocumentStalenessQuery,
+  type TargetStaleness,
+  type LinkStaleness,
+  type AccountDeleteResponse,
+  type AccountRestoreResponse,
+  type DeleteResponse,
+  type DictionaryResponse,
+  type DictionaryUpdateRequest,
+  type DictionaryUpdateResponse,
+  type DocumentViewState,
+  type DocumentViewStatePutResponse,
+  type DocumentViewStateResponse,
+  type StarResponse,
+  type UserMacro,
+  type UserMacroCreateRequest,
+  type UserMacroPatchRequest,
+  type UserPreferences,
+  type UserPreferencesInput,
+  type UserPreferencesPutResponse,
+  type UserPreferencesResponse,
+  type WritingGoal,
+  type WritingGoalsPutRequest,
+  type WritingSessionRequest,
+  type WritingSessionResponse,
+  type WritingStats,
+  type WritingStatsQuery,
+  type ApplyTemplateResponse,
+  type DocumentApplyTemplateRequest,
+  type DocumentDuplicateRequest,
+  type DocumentMoveRequest,
+  type ProjectBinCreateRequest,
+  type ProjectBinDeleteResponse,
+  type ProjectBinItem,
+  type ProjectDuplicateRequest,
+  type ProjectFolder,
+  type ProjectFolderCreateRequest,
+  type ProjectFolderDeleteResponse,
+  type ProjectFolderUpdateRequest,
+  type PurgeScheduledResponse,
+  type TemplateArchiveResponse,
+  type TemplateCreateRequest,
+  type TemplateExportResponse,
+  type TemplateFileFormat,
+  type TemplateImportRequest,
+  type TemplateImportByIdRequest,
+  type ExportCombinedRequest,
+  type ExportCreateRequest,
+  type ImportCreateRequest,
+  type ImportCreateResponse,
+  type ImportOptions,
+  type ImportOverRequest,
+  type JobOutput,
+  type UploadStateRequest,
+  type UploadStateResponse,
+  type WatermarkLookupRequest,
+  type WatermarkLookupResponse,
+  type TemplateListQuery,
+  type TemplateUpdateRequest,
+  type TemplateVersionCreateRequest,
+  type TrashItem,
+  type WorkspaceContact,
+  type WorkspaceContactDeleteResponse,
+  type WorkspaceContactPatchRequest,
+  type WorkspaceContactsCreateRequest,
+  type WorkspaceContactsQuery,
+  type WorkspaceDefaults,
+  type WorkspaceDefaultsDoc,
+  type WorkspaceDefaultsPutRequest,
+  type WorkspaceDocumentsQuery,
   type AiJob,
   type Job,
   type JobCreateRequest,
@@ -18,7 +115,71 @@ import {
   type SuggestionAcceptResponse,
   type SuggestionSet,
   type SuggestionSetSummary,
+  type AiConsentAcceptRequest,
+  type AiConsentAcceptResponse,
+  type AiConsentStatus,
+  type AiEstimateRequest,
+  type AiEstimateResponse,
+  type AiActivityItem,
+  type AiReportSummary,
+  type AiNoteConvertResponse,
+  type SuggestionDecideRequest,
+  type SuggestionDecideResponse,
+  type CoverageReport,
+  type ConsumableBalanceResponse,
+  type ConsumablePurchaseRecord,
+  type ConsumableUsageRecord,
+  type CreditProduct,
+  type PurchaseHandoffRequest,
+  type PurchaseHandoffResponse,
+  type PublicConfig,
+  type NamesDbResponse,
+  type DeepHealthResponse,
+  type WatermarkedDownloadInfo,
+  type PurchaseHandoffRedeemRequest,
+  type PurchaseHandoffRedeemResponse,
+  type TelemetryRequest,
+  type TelemetryResponse,
+  type AdminUserLookup,
+  type AdminUserRestoreResponse,
+  type AdminUserPurgeResponse,
+  type AdminJobListQuery,
+  type AdminJobRefundRequest,
+  type AdminJobRefundResponse,
+  type AdminJobKind,
+  type AdminJobKindPatchRequest,
+  type AdminDocumentMeta,
+  type AlternatesView,
   type ApiRouteName,
+  type BeatRow,
+  type BinRow,
+  type ChangeRow,
+  type CharacterPacket,
+  type DialogueSceneView,
+  type DocumentSearchHit,
+  type DocumentSearchQuery,
+  type EntityDetail,
+  type EntityListQuery,
+  type EntitySummary,
+  type EntityUsage,
+  type LocationPacket,
+  type NoteSummary,
+  type PacketQuery,
+  type ReportCreateRequest,
+  type ReportKind,
+  type ReportKindInfo,
+  type ReportResult,
+  type ResolveResult,
+  type RevisionsView,
+  type ScenePacket,
+  type SearchHit,
+  type SearchQuery,
+  type ShotPacket,
+  type ShotRow,
+  type StatsRead,
+  type TagCategoryRow,
+  type TagRow,
+  type TitlePageRead,
   type DocumentLockResponse,
   type GrantUpdateRequest,
   type Invitation,
@@ -69,6 +230,19 @@ import {
   type SceneRead,
   type ScenesBatchResponse,
   type SnapshotCreateRequest,
+  type SnapshotCommentCreateRequest,
+  type SnapshotCommentResolveRequest,
+  type SnapshotComment,
+  type SnapshotNote,
+  type SnapshotNoteCreateRequest,
+  type SnapshotPrefsRequest,
+  type SnapshotPrefsResponse,
+  type CopyToLiveResponse,
+  type CompareRequest,
+  type DocumentDiff,
+  type ElementHistoryEntry,
+  type PresenceEntry,
+  type VersionRestoreAsCopyRequest,
   type SnapshotCreateResponse,
   type SnapshotDetail,
   type SnapshotForkRequest,
@@ -82,10 +256,38 @@ import {
   type VersionSnapshotRequest,
   type WorkspaceDetail,
   type WorkspaceListItem,
+  // B12 collaboration, notifications, devices, email
+  type ActivityEvent,
+  type ActivityQuery,
+  type ChatMessage,
+  type ChatMessageCreateRequest,
+  type ChatMessageDeleteResponse,
+  type ChatMessageUpdateRequest,
+  type ChatQuery,
+  type Device,
+  type DeviceCreateRequest,
+  type DeviceCreateResponse,
+  type DeviceRevokeResponse,
+  type DeviceUpdateRequest,
+  type MentionWithoutAccess,
+  type Notification,
+  type NotificationDeleteResponse,
+  type NotificationPrefs,
+  type NotificationPrefsUpdate,
+  type NotificationsQuery,
+  type NotificationsReadRequest,
+  type NotificationsReadResponse,
+  type PushTokenDeleteResponse,
+  type PushTokenSetRequest,
+  type PushTokenSetResponse,
+  type WorkspaceActivityEvent,
+  type WorkspaceActivityQuery,
 } from "@sudobility/screenwriter_types";
 import type { DocumentJSON, TemplateJSON } from "@sudobility/writing_core";
-import { ApiError, apiErrorFrom } from "../errors";
+import { ApiError, AssetUploadInterruptedError, StaleWriteError, apiErrorFrom } from "../errors";
 import { base64ToBytes, bytesToBase64, type BinaryInput, toUint8Array } from "../util/base64";
+import { sha256Hex } from "../util/sha256";
+import { backoffDelay } from "../sync/backoff";
 import type { HttpMethod, NetworkClient, NetworkResponse } from "./network-client";
 import {
   GZIP_MIN_BYTES,
@@ -143,6 +345,84 @@ export interface ExportedDocument {
   format: ExportFormatId;
 }
 
+/** Where `importFile` puts a file: a new document in a project, or over an existing document (`pre-import` snapshot, epoch bump). */
+export type ImportFileTarget = { projectId: string; documentId?: undefined } | { documentId: string; projectId?: undefined };
+/** A file for `importFile`. `format` is auto-detected from the bytes when omitted. */
+export interface ImportFileInput {
+  filename: string;
+  bytes: BinaryInput;
+  format?: string;
+  options?: ImportOptions;
+}
+
+/** `importTemplate` input: the file as `bytes` (or an already-encoded `contentB64`) plus scope and file name. */
+export type ImportTemplateInput = Omit<TemplateImportRequest, "contentB64"> &
+  ({ bytes: BinaryInput; contentB64?: undefined } | { contentB64: string; bytes?: undefined });
+/** What `importTemplate` takes: the file (inline), or `{importId}` of an upload made with `createImportJob({templateTarget, ...})`. */
+export type ImportTemplateArg = ImportTemplateInput | TemplateImportByIdRequest;
+
+export interface ExportedTemplate {
+  filename: string;
+  mimeType: string;
+  /** Decoded file bytes. */
+  bytes: Uint8Array;
+  format: TemplateFileFormat;
+}
+
+/** What `setWorkspaceDefaults` takes: top-level keys to set; `null` resets one to empty. */
+export type WorkspaceDefaultsUpdate = { [K in keyof WorkspaceDefaultsDoc]?: WorkspaceDefaultsDoc[K] | null };
+
+/** A `applyTemplate` answer is the `doc.applyTemplate` job (not the dry-run report) when it has a `status`. */
+export const isApplyTemplateJob = (r: ApplyTemplateResponse): r is Job => "status" in r && "kind" in r;
+
+// ─── assets (B11) ────────────────────────────────────────────────────────────
+
+/** A file for `uploadAsset`: a web `File`/`Blob`, or `{uri, name, type}` (React Native and similar: read through platform `fetch`). */
+export type UploadableFile = File | Blob | { uri: string; name: string; type: string };
+
+export interface UploadAssetOptions {
+  kind: AssetKind;
+  /** Client-minted `asset_...` id (offline staging), accepted if unused. */
+  assetId?: string;
+  title?: string;
+  /** A new version of this existing version (its asset, not `assetId`, decides which asset it lands on). */
+  parentVersionId?: string;
+  provenance?: AssetProvenanceInput;
+  rights?: Partial<AssetRights>;
+  /** 0..1 of bytes sent, called after each part and once more at 1 when the asset is ready. */
+  onProgress?: (fraction: number) => void;
+  /** Part PUTs in flight at once (default `ASSET_UPLOAD_CONCURRENCY`, 3). */
+  concurrency?: number;
+  /** Retries per part before giving up on the whole upload (default 3). */
+  partRetries?: number;
+  signal?: AbortSignal;
+  /** Resume an upload from an earlier `AssetUploadInterruptedError.uploadId`: only the parts the storage does not have yet are sent. */
+  resumeUploadId?: string;
+}
+
+/** At most this many bytes are hashed up front (enables dedup before any bytes are sent); a bigger file skips it and relies on the server's own streaming re-hash at `complete`. */
+export const PREHASH_MAX_BYTES = 64 * 1024 * 1024;
+
+function isBlobLike(v: unknown): v is Blob {
+  return typeof Blob !== "undefined" && v instanceof Blob;
+}
+
+async function resolveUploadable(file: UploadableFile): Promise<{ blob: Blob; name: string; type: string; size: number }> {
+  if (isBlobLike(file)) {
+    const name = typeof File !== "undefined" && file instanceof File ? file.name : "upload";
+    return { blob: file, name, type: file.type || "application/octet-stream", size: file.size };
+  }
+  const res = await fetch(file.uri);
+  if (!res.ok) throw new ApiError(`Could not read ${file.uri}: HTTP ${res.status}`, "NETWORK_ERROR", 0);
+  const blob = await res.blob();
+  return { blob, name: file.name, type: file.type || blob.type || "application/octet-stream", size: blob.size };
+}
+
+async function sha256HexOfBlob(blob: Blob): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
+  return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
+}
+
 type Query = Record<string, string | number | boolean | undefined>;
 
 /**
@@ -156,6 +436,35 @@ export type AuthMode = "user" | "none" | { bearer: string };
 export type ShareLinkTargetRef = { type: "document" | "project" | "snapshot"; id: string };
 
 const enc = encodeURIComponent;
+
+const packetQuery = (q: PacketQuery): Query => ({ snapshotId: q.snapshotId, include: q.include?.join(",") });
+
+/** A `getReport` / `createReport` answer is a `report.render` job (not the result) when it has a `status`. */
+export const isReportJob = (r: ReportResult | Job): r is Job => "status" in r && "kind" in r && r.kind === "report.render";
+
+/** What `setPreferences` takes: top-level keys to set; `null` removes a key. `version` is kept from the server copy unless given. */
+export type UserPreferencesUpdate = { [K in keyof UserPreferencesInput]?: UserPreferencesInput[K] | null };
+/** What `setMyDocumentState` takes: top-level keys to set; `null` removes a key. */
+export type DocumentViewStateUpdate = { [K in keyof DocumentViewState]?: DocumentViewState[K] | null };
+/** One goal of `setWritingGoals` (`id` keeps an existing goal; without it a new one is created). */
+export type WritingGoalInput = WritingGoalsPutRequest["goals"][number];
+
+/** `{...current, ...update}` per top-level key: an `undefined` value is ignored, `null` deletes the key. `updatedAt` is dropped. */
+export function mergeTopLevel<T extends object>(current: T & { updatedAt?: string }, update: { [K in keyof T]?: T[K] | null }): T {
+  const { updatedAt: _dropped, ...rest } = current as Record<string, unknown>;
+  const out: Record<string, unknown> = { ...rest };
+  for (const [k, v] of Object.entries(update)) {
+    if (v === undefined) continue;
+    if (v === null) delete out[k];
+    else out[k] = v;
+  }
+  return out as T;
+}
+
+/** A fresh `clientSessionId` for `recordWritingSession` (`wss_` + 32 hex chars). */
+export function newWritingSessionId(): string {
+  return `wss_${newIdempotencyKey().replace(/[^A-Za-z0-9]/g, "").padEnd(32, "0").slice(0, 32)}`;
+}
 
 /**
  * Typed wrapper over every route the API serves. Returns unwrapped envelope `data`, throws `ApiError`.
@@ -192,7 +501,7 @@ export class ScreenwriterClient {
   }
 
   /** POSTs that never get an `Idempotency-Key`: reads dressed as POST and file bodies the server already dedupes by id. */
-  private static readonly NO_KEY = [/\/export$/, /\/documents\/import$/, /\/(elements|scenes)\/batch$/, /\/share\/[^/]+\/unlock$/];
+  private static readonly NO_KEY = [/\/export$/, /\/documents\/import$/, /\/(elements|scenes)\/batch$/, /\/share\/[^/]+\/unlock$/, /\/documents\/[^/]+\/compare$/];
 
   /**
    * The request funnel (spec 10 §2.2): headers (token, `X-Client`, unlock token, `Idempotency-Key` on creates), gzip of
@@ -349,6 +658,56 @@ export class ScreenwriterClient {
   }
   getWorkspaceUsage(wid: string) {
     return this.json<WorkspaceUsage>("GET", `/workspaces/${enc(wid)}/usage`);
+  }
+  /** Documents across the workspace's projects; `starred` is the caller's own stars, `label` a document label. */
+  listWorkspaceDocuments(wid: string, query: Partial<WorkspaceDocumentsQuery> = {}) {
+    return this.json<Paginated<DocumentMeta>>("GET", `/workspaces/${enc(wid)}/documents`, query);
+  }
+  /** Trashed projects and documents, with the date each is purged (30 days after it was trashed). */
+  listTrash(wid: string, query: Partial<CursorQuery> = {}) {
+    return this.json<Paginated<TrashItem>>("GET", `/workspaces/${enc(wid)}/trash`, query);
+  }
+  /** Purge everything in the trash now (admin): a `system.purge` `Job`. 400 `CONFIRMATION_MISMATCH` unless `confirm` is `EMPTY`. */
+  emptyTrash(wid: string) {
+    return this.json<Job>("POST", `/workspaces/${enc(wid)}/trash/empty`, undefined, { confirm: "EMPTY" });
+  }
+  getWorkspaceDefaults(wid: string) {
+    return this.json<WorkspaceDefaults>("GET", `/workspaces/${enc(wid)}/defaults`);
+  }
+  /**
+   * Set some of the workspace defaults (admin). Merges `update` per top-level key onto the server copy (or `base`, the last
+   * result, to skip the read; `null` resets a key), PUTs the whole document with `baseUpdatedAt`, and on 409 `STALE_WRITE`
+   * merges onto `details.current` and retries ONCE. Resolves to the resulting defaults.
+   */
+  async setWorkspaceDefaults(wid: string, update: WorkspaceDefaultsUpdate, base?: WorkspaceDefaults): Promise<WorkspaceDefaults> {
+    let current = base ?? (await this.getWorkspaceDefaults(wid));
+    for (let attempt = 0; ; attempt++) {
+      const next = mergeTopLevel<WorkspaceDefaultsDoc>(current, update as never);
+      try {
+        return await this.json<WorkspaceDefaults>("PUT", `/workspaces/${enc(wid)}/defaults`, undefined, { ...next, baseUpdatedAt: current.updatedAt } satisfies WorkspaceDefaultsPutRequest);
+      } catch (e) {
+        const server = e instanceof StaleWriteError ? e.current : undefined;
+        if (attempt === 0 && server) {
+          current = server as unknown as WorkspaceDefaults;
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+  /** Batch-watermark recipients (admin-managed, any member reads). `q` matches name, company and email. */
+  listContacts(wid: string, query: Partial<WorkspaceContactsQuery> = {}) {
+    return this.json<Paginated<WorkspaceContact>>("GET", `/workspaces/${enc(wid)}/contacts`, query);
+  }
+  /** Up to 500 at once; an entry with a known `id` replaces that contact (409 `LIMIT_EXCEEDED` past 500). */
+  createContacts(wid: string, contacts: WorkspaceContactsCreateRequest["contacts"]) {
+    return this.json<WorkspaceContact[]>("POST", `/workspaces/${enc(wid)}/contacts`, undefined, { contacts });
+  }
+  updateContact(cid: string, patch: WorkspaceContactPatchRequest) {
+    return this.json<WorkspaceContact>("PATCH", `/workspace-contacts/${enc(cid)}`, undefined, patch);
+  }
+  deleteContact(cid: string) {
+    return this.json<WorkspaceContactDeleteResponse>("DELETE", `/workspace-contacts/${enc(cid)}`);
   }
   /** The audit log as CSV text (owner/admin; range at most one year). */
   async downloadWorkspaceAudit(wid: string, range: WorkspaceAuditQuery = {}): Promise<string> {
@@ -526,6 +885,39 @@ export class ScreenwriterClient {
   restoreProject(pid: string) {
     return this.json<ProjectSummary>("POST", `/projects/${enc(pid)}/restore`);
   }
+  /** Permanently delete a TRASHED project (admin): `confirmName` must equal its name. The delete runs as a `system.purge` job. */
+  deleteProject(pid: string, confirmName: string) {
+    return this.json<PurgeScheduledResponse>("DELETE", `/projects/${enc(pid)}`, undefined, { confirmName });
+  }
+  /** Copy a project (folders, documents, optionally snapshots) as a `project.duplicate` job; `job.result.projectId` names the copy. */
+  duplicateProject(pid: string, body: ProjectDuplicateRequest) {
+    return this.json<Job>("POST", `/projects/${enc(pid)}/duplicate`, undefined, body);
+  }
+  /** 409 `FOLDER_DEPTH` past 8 levels. */
+  createFolder(pid: string, body: ProjectFolderCreateRequest) {
+    return this.json<ProjectFolder>("POST", `/projects/${enc(pid)}/folders`, undefined, body);
+  }
+  /** 409 `FOLDER_CYCLE` when the new parent is the folder itself or one of its subfolders. */
+  updateFolder(fid: string, patch: ProjectFolderUpdateRequest) {
+    return this.json<ProjectFolder>("PATCH", `/project-folders/${enc(fid)}`, undefined, patch);
+  }
+  /** Contents (documents and subfolders) move to `moveContentsTo` (`"root"` or a folder id); default: the deleted folder's parent. */
+  deleteFolder(fid: string, moveContentsTo?: string) {
+    return this.json<ProjectFolderDeleteResponse>("DELETE", `/project-folders/${enc(fid)}`, { moveContentsTo });
+  }
+
+  // ─── Shared Bin (project-level snippets, B14) ────────────────────────────
+
+  listProjectBin(pid: string, query: Partial<CursorQuery> = {}) {
+    return this.json<Paginated<ProjectBinItem>>("GET", `/projects/${enc(pid)}/bin`, query);
+  }
+  /** Pass a `bin_` `id` to make it idempotent. Notes and tags are stripped from the elements; 409 `LIMIT_EXCEEDED` past 2 MiB. */
+  addToProjectBin(pid: string, body: ProjectBinCreateRequest) {
+    return this.json<ProjectBinItem>("POST", `/projects/${enc(pid)}/bin`, undefined, body);
+  }
+  removeFromProjectBin(id: string) {
+    return this.json<ProjectBinDeleteResponse>("DELETE", `/project-bin-items/${enc(id)}`);
+  }
 
   // ─── documents ───────────────────────────────────────────────────────────
 
@@ -547,6 +939,26 @@ export class ScreenwriterClient {
   }
   restoreDocument(did: string) {
     return this.json<DocumentMeta>("POST", `/documents/${enc(did)}/restore`);
+  }
+  /** Permanently delete a TRASHED document with its history (admin). Runs as a `system.purge` job. */
+  purgeDocument(did: string) {
+    return this.json<PurgeScheduledResponse>("DELETE", `/documents/${enc(did)}`);
+  }
+  /** Another project of the same workspace (403 `MOVE_FORBIDDEN` across workspaces). Omit `folderId` for the project root. */
+  moveDocument(did: string, body: DocumentMoveRequest) {
+    return this.json<DocumentMeta>("POST", `/documents/${enc(did)}/move`, undefined, body);
+  }
+  /** A new document from the live state (epoch 0, element ids kept). */
+  duplicateDocument(did: string, body: DocumentDuplicateRequest) {
+    return this.json<DocumentMeta>("POST", `/documents/${enc(did)}/duplicate`, undefined, body);
+  }
+  /**
+   * Re-style a document with a template version. `dryRun: true` answers `{unmappedStyles, pageDelta}`; otherwise a
+   * `doc.applyTemplate` `Job` (a `pre-template` auto snapshot is taken first); `isApplyTemplateJob` tells them apart. 422
+   * `UNMAPPED_STYLES` (`UnmappedStylesError.unmappedStyles`) until every style without a counterpart is in `mapping`.
+   */
+  applyTemplate(did: string, body: DocumentApplyTemplateRequest) {
+    return this.json<ApplyTemplateResponse>("POST", `/documents/${enc(did)}/template`, undefined, body);
   }
   /** Live Yjs V2 state as bytes (`Y.applyUpdateV2`), with the epoch it belongs to. */
   getDocumentState(did: string) {
@@ -585,6 +997,113 @@ export class ScreenwriterClient {
     return this.json<ElementsBatchResponse>("POST", `/documents/${enc(did)}/elements/batch`, undefined, { elementIds });
   }
 
+  // ─── projection-backed reads, search, reports, packets (B10) ─────────────────
+  // `source` on every read is `live` (default), `snapshot:<id>` or `version:<id>`.
+
+  listEntities(did: string, query: Partial<EntityListQuery> = {}) {
+    return this.json<Paginated<EntitySummary>>("GET", `/documents/${enc(did)}/entities`, query);
+  }
+  getEntity(did: string, eid: string, source?: string) {
+    return this.json<EntityDetail>("GET", `/documents/${enc(did)}/entities/${enc(eid)}`, { source });
+  }
+  /** What blocks deleting the entity (`total`) and the lists behind *Show usages*; `unassigned` counts uses that name no age or version. */
+  getEntityUsage(did: string, eid: string, query: { variantId?: string; source?: string } = {}) {
+    return this.json<EntityUsage>("GET", `/documents/${enc(did)}/entities/${enc(eid)}/usage`, query);
+  }
+  /** Dialogue Tuner: the entity's speech grouped by scene (`sceneIds` is a comma list). */
+  getEntityDialogue(did: string, eid: string, query: { sceneIds?: string[]; source?: string } = {}) {
+    return this.json<DialogueSceneView[]>("GET", `/documents/${enc(did)}/entities/${enc(eid)}/dialogue`, { sceneIds: query.sceneIds?.join(","), source: query.source });
+  }
+  listTagCategories(did: string, source?: string) {
+    return this.json<TagCategoryRow[]>("GET", `/documents/${enc(did)}/tag-categories`, { source });
+  }
+  listTags(did: string, query: { sceneId?: string; categoryId?: string; entityId?: string; source?: string } = {}) {
+    return this.json<TagRow[]>("GET", `/documents/${enc(did)}/tags`, query);
+  }
+  listNotes(did: string, query: { sceneId?: string; type?: string; status?: "open" | "resolved"; source?: string } = {}) {
+    return this.json<NoteSummary[]>("GET", `/documents/${enc(did)}/notes`, query);
+  }
+  listBeats(did: string, source?: string) {
+    return this.json<BeatRow[]>("GET", `/documents/${enc(did)}/beats`, { source });
+  }
+  getBin(did: string, source?: string) {
+    return this.json<BinRow[]>("GET", `/documents/${enc(did)}/bin`, { source });
+  }
+  listRevisions(did: string, source?: string) {
+    return this.json<RevisionsView>("GET", `/documents/${enc(did)}/revisions`, { source });
+  }
+  listChanges(did: string, query: { authorId?: string; sceneId?: string; source?: string } = {}) {
+    return this.json<ChangeRow[]>("GET", `/documents/${enc(did)}/changes`, query);
+  }
+  getAlternates(did: string, elementId: string, source?: string) {
+    return this.json<AlternatesView>("GET", `/documents/${enc(did)}/alternates/${enc(elementId)}`, { source });
+  }
+  getTitlePage(did: string, source?: string) {
+    return this.json<TitlePageRead>("GET", `/documents/${enc(did)}/title-page`, { source });
+  }
+  getStats(did: string, source?: string) {
+    return this.json<StatsRead>("GET", `/documents/${enc(did)}/stats`, { source });
+  }
+  /** Fountain text of the script, or of `sceneIds` / from `fromSceneId`. `nextFromScene` is set when the server cut it at 1 MB: ask again from there. */
+  async getFountain(did: string, query: { sceneIds?: string[]; fromSceneId?: string; source?: string } = {}): Promise<{ text: string; nextFromScene: string | null }> {
+    const res = await this.send("GET", `/documents/${enc(did)}/fountain`, { sceneIds: query.sceneIds?.join(","), fromSceneId: query.fromSceneId, source: query.source });
+    if (res.status < 200 || res.status >= 300) this.fail(res);
+    return { text: new TextDecoder().decode(res.body), nextFromScene: res.headers["x-next-from-scene"] ?? null };
+  }
+  listSceneShots(did: string, sceneId: string, source?: string) {
+    return this.json<ShotRow[]>("GET", `/documents/${enc(did)}/scenes/${enc(sceneId)}/shots`, { source });
+  }
+
+  /** Resolve up to 200 locators (`#12A`, `@5`, `p47`, `MAYA`, ...) to ids. Ambiguity and misses are results, never errors. */
+  resolveLocators(did: string, locators: string[], snapshotId?: string) {
+    return this.json<ResolveResult[]>("POST", `/documents/${enc(did)}/resolve`, undefined, { locators, ...(snapshotId ? { snapshotId } : {}) });
+  }
+  /** One locator: throws `LocatorAmbiguousError` (409), `LocatorNotFoundError` (404) or an `ApiError` `INVALID_LOCATOR` (400). */
+  resolveLocator(did: string, ref: string, snapshotId?: string) {
+    return this.json<Extract<ResolveResult, { status: "resolved" }>>("GET", `/documents/${enc(did)}/resolve`, { ref, snapshotId });
+  }
+
+  /** Full-text search across the caller's readable documents (scope with `workspaceId`, `projectId` or `documentId`). */
+  search(query: Partial<SearchQuery> & { q: string }) {
+    const { types, styleIds, ...rest } = query;
+    return this.json<Paginated<SearchHit>>("GET", "/search", { ...rest, types: types?.join(","), styleIds: styleIds?.join(",") });
+  }
+  searchWorkspace(wid: string, query: Partial<Omit<SearchQuery, "workspaceId">> & { q: string }) {
+    const { types, styleIds, ...rest } = query;
+    return this.json<Paginated<SearchHit>>("GET", `/workspaces/${enc(wid)}/search`, { ...rest, types: types?.join(","), styleIds: styleIds?.join(",") });
+  }
+  /** In-document find (text or regex; 400 `INVALID_REGEX`). */
+  searchDocument(did: string, query: Partial<DocumentSearchQuery> & { q: string }) {
+    const { styles, characters, ...rest } = query;
+    return this.json<DocumentSearchHit[]>("GET", `/documents/${enc(did)}/search`, { ...rest, styles: styles?.join(","), characters: characters?.join(",") });
+  }
+
+  getReportKinds() {
+    return this.json<ReportKindInfo[]>("GET", "/reports/kinds");
+  }
+  /** One report as JSON tables, or a `report.render` `Job` for a document past 200 pages (`isReportJob`). 400 `ReportOptionsInvalidError`, 501 `ReportKindUnavailableError`. */
+  getReport(did: string, kind: ReportKind, query: { source?: string; options?: Record<string, unknown> } = {}) {
+    return this.json<ReportResult | Job>("GET", `/documents/${enc(did)}/reports/${enc(kind)}`, { source: query.source, options: query.options ? JSON.stringify(query.options) : undefined });
+  }
+  /** `format: "json"` answers the result; `csv`, `pdf` and `html` answer a `report.render` job (poll it, then `getJobOutputs`). */
+  createReport(did: string, body: ReportCreateRequest) {
+    return this.json<ReportResult | Job>("POST", `/documents/${enc(did)}/reports`, undefined, body);
+  }
+
+  /** Production packets (spec 11 §7). `locator` is any locator or raw id; 409 `LocatorAmbiguousError`, 404 `LocatorNotFoundError`, 422 `KIND_MISMATCH`. */
+  getScenePacket(did: string, locator: string, query: PacketQuery = {}) {
+    return this.json<ScenePacket>("GET", `/documents/${enc(did)}/packets/scene/${enc(locator)}`, packetQuery(query));
+  }
+  getCharacterPacket(did: string, locator: string, query: PacketQuery = {}) {
+    return this.json<CharacterPacket>("GET", `/documents/${enc(did)}/packets/character/${enc(locator)}`, packetQuery(query));
+  }
+  getLocationPacket(did: string, locator: string, query: PacketQuery = {}) {
+    return this.json<LocationPacket>("GET", `/documents/${enc(did)}/packets/location/${enc(locator)}`, packetQuery(query));
+  }
+  getShotPacket(did: string, locator: string, query: PacketQuery = {}) {
+    return this.json<ShotPacket>("GET", `/documents/${enc(did)}/packets/shot/${enc(locator)}`, packetQuery(query));
+  }
+
   /** Import a script file into a project. The server detects the format from the content. */
   importDocument(pid: string, input: ImportDocumentInput) {
     const { bytes, contentB64, ...rest } = input;
@@ -605,14 +1124,316 @@ export class ScreenwriterClient {
     return this.json<FormatInfo[]>("GET", "/formats");
   }
 
+  // ─── imports, exports and watermark as jobs (B16) ─────────────────────────
+
+  /** A presigned PUT for a Yjs state blob (`purpose: "state"`, default) or a leaked file for `lookupWatermark`. PUT the bytes with `putUpload`. 413 `IMPORT_TOO_LARGE`. */
+  uploadState(body: UploadStateRequest) {
+    return this.json<UploadStateResponse>("POST", "/uploads/state", undefined, body);
+  }
+  /**
+   * Step 1 of an import: declares the file (`sizeBytes`, `sha256Hex`) and the target (`targetProjectId`, or `templateTarget` for a template
+   * file) and answers `{importId, upload: {url}}`. No job exists yet: `putUpload(upload.url, bytes)`, then `startImport(importId)`.
+   * `importFile` does all three. 415 `FormatUnsupportedError` (PDF, DOCX, ...), 503 `OcrUnavailableError` (`ocr: "force"`).
+   */
+  createImportJob(body: ImportCreateRequest) {
+    return this.json<ImportCreateResponse>("POST", "/imports", undefined, body);
+  }
+  /** Step 3: checks the uploaded bytes and creates the `import.<format>` (or `doc.importOver`) job. Repeating it returns the same job. 409 `UploadIncompleteError` until the PUT is done. */
+  startImport(importId: string) {
+    return this.json<Job>("POST", `/imports/${enc(importId)}/start`);
+  }
+  /** Step 1 of replacing a document's content with a file (`pre-import` auto snapshot, then an epoch bump: open editors rebase). Same follow-up as `createImportJob`; 409 `DOCUMENT_BUSY` at start. */
+  importOver(did: string, body: ImportOverRequest) {
+    return this.json<ImportCreateResponse>("POST", `/documents/${enc(did)}/import-over`, undefined, body);
+  }
+  /**
+   * An `export.<format>` job (or `watermark.batch` with `options.batchWatermark`). Formats: fountain, fdx, json; anything else is 415
+   * `FormatUnsupportedError`. Poll with `getJob`/`useJob`, then `getJobOutputs` + `fetchJobOutput`.
+   */
+  createExportJob(did: string, body: ExportCreateRequest) {
+    return this.json<Job>("POST", `/documents/${enc(did)}/exports`, undefined, body);
+  }
+  /** One file from several documents (`fdx` or `fountain`): the first document's title page and template, bodies in the order given. */
+  exportCombined(body: ExportCombinedRequest) {
+    return this.json<Job>("POST", "/documents/export-combined", undefined, body);
+  }
+  /** Which recipient a leaked copy was made for: `{exportId}` or `{pdfUploadKey}` (a file uploaded with `uploadState({purpose: "watermark_lookup"})`). Admins only; 404 `WatermarkNotFoundError`. */
+  lookupWatermark(wid: string, body: WatermarkLookupRequest) {
+    return this.json<WatermarkLookupResponse>("POST", `/workspaces/${enc(wid)}/watermark-lookup`, undefined, body);
+  }
+
+  /** PUTs bytes to a presigned upload URL (no `Authorization`, like R2). Throws `ApiError` on a refusal (an expired URL is 410 `UPLOAD_EXPIRED`). */
+  async putUpload(url: string, bytes: BinaryInput): Promise<void> {
+    let res: NetworkResponse;
+    try {
+      res = await this.opts.network.request({ method: "PUT", url, headers: { "Content-Type": "application/octet-stream" }, body: toUint8Array(bytes) });
+    } catch (e) {
+      throw new ApiError(e instanceof Error ? e.message : String(e), "NETWORK_ERROR", 0);
+    }
+    if (res.status < 200 || res.status >= 300) this.fail(res);
+  }
+
+  /** Uploads a state blob or leaked file (`POST /uploads/state`, hash, PUT) and returns its `uploadKey`. */
+  async uploadStateBytes(bytes: BinaryInput, purpose: "state" | "watermark_lookup" = "state"): Promise<string> {
+    const data = toUint8Array(bytes);
+    const up = await this.uploadState({ sizeBytes: data.byteLength, sha256Hex: await sha256Hex(data), purpose });
+    await this.putUpload(up.url, data);
+    return up.uploadKey;
+  }
+
+  /**
+   * The whole import flow: declare, upload, start. Resolves with the queued `Job` (`import.<format>`, or `doc.importOver` with a
+   * `documentId` target); follow it with `getJob`/`useJob`, then read the created document ids from the outputs (`output.documentId`,
+   * the `conversion-report.json` of each).
+   */
+  async importFile(target: ImportFileTarget, file: ImportFileInput): Promise<Job> {
+    const bytes = toUint8Array(file.bytes);
+    const decl = { filename: file.filename, sizeBytes: bytes.byteLength, sha256Hex: await sha256Hex(bytes), ...(file.format ? { format: file.format } : {}), ...(file.options ? { options: file.options } : {}) };
+    const made = target.documentId ? await this.importOver(target.documentId, decl) : await this.createImportJob({ targetProjectId: target.projectId as string, ...decl });
+    await this.putUpload(made.upload.url, bytes);
+    return this.startImport(made.importId);
+  }
+
+  /** The bytes of a finished job's output: a `data:` URL is decoded locally, a presigned URL is fetched without credentials. */
+  async fetchJobOutput(output: Pick<JobOutput, "url">): Promise<Uint8Array> {
+    if (output.url.startsWith("data:")) {
+      const comma = output.url.indexOf(",");
+      const head = output.url.slice(5, comma);
+      const body = output.url.slice(comma + 1);
+      return head.endsWith(";base64") ? base64ToBytes(body) : new TextEncoder().encode(decodeURIComponent(body));
+    }
+    let res: NetworkResponse;
+    try {
+      res = await this.opts.network.request({ method: "GET", url: output.url });
+    } catch (e) {
+      throw new ApiError(e instanceof Error ? e.message : String(e), "NETWORK_ERROR", 0);
+    }
+    if (res.status < 200 || res.status >= 300) this.fail(res);
+    return res.body;
+  }
+
+  // ─── assets and R2 (B11) ───────────────────────────────────────────────────
+
+  /**
+   * Step 1 of an upload: declares the file and answers a presigned plan (`{uploadId, assetId, versionId, parts}`; `parts` is
+   * empty when `deduplicated` - the workspace already holds these bytes). PUT each part's bytes to its `url` with
+   * `putUploadPart` and read the `ETag` it returns, then `completeAssetUpload`. `uploadAsset` runs the whole plan.
+   */
+  initAssetUpload(wid: string, body: AssetUploadRequest) {
+    return this.json<AssetUploadInit>("POST", `/workspaces/${enc(wid)}/assets/uploads`, undefined, body);
+  }
+  /** Resume: what the storage already has for this upload (`completedParts`), so only the missing parts need `signAssetUploadParts`. */
+  getAssetUpload(uploadId: string) {
+    return this.json<AssetUploadStatus>("GET", `/assets/uploads/${enc(uploadId)}`);
+  }
+  /** Fresh presigned URLs for these part numbers (the first ones may have expired, or this is a resume). */
+  signAssetUploadParts(uploadId: string, partNumbers: number[]) {
+    return this.json<AssetPartsResponse>("POST", `/assets/uploads/${enc(uploadId)}/parts`, undefined, { partNumbers } satisfies AssetPartsRequest);
+  }
+  /** Step 3: the server assembles the parts, re-hashes by streaming, sniffs the type and enqueues `asset.derive` (a documented stub: see the API's CLAUDE.md). Idempotent. */
+  completeAssetUpload(uploadId: string, body: AssetCompleteRequest) {
+    return this.json<AssetSummary>("POST", `/assets/uploads/${enc(uploadId)}/complete`, undefined, body);
+  }
+  /** Aborts an unfinished upload; a brand-new asset with no other version is removed with it. */
+  abortAssetUpload(uploadId: string) {
+    return this.json<AssetAbortResponse>("DELETE", `/assets/uploads/${enc(uploadId)}`);
+  }
+  /** `?workspaceId=` is required for a user (a key defaults to its own workspace). */
+  listAssets(query: Partial<AssetListQuery> = {}) {
+    return this.json<Paginated<AssetListItem>>("GET", "/assets", query as Query);
+  }
+  getAsset(aid: string) {
+    return this.json<AssetDetail>("GET", `/assets/${enc(aid)}`);
+  }
+  /** A signed GET of the original (`variant` default) or a named derivative (`thumb_256`, `preview_1600`, ...); 409 `AssetNotReadyError` when that variant does not exist (`asset.derive` is disabled by default: only `original` ever will). */
+  getAssetUrl(aid: string, vid: string, query: Partial<AssetUrlQuery> = {}) {
+    return this.json<AssetUrlResponse>("GET", `/assets/${enc(aid)}/versions/${enc(vid)}/url`, query as Query);
+  }
+  /** `rights` changes create no new version; provenance is immutable per version. */
+  updateAsset(aid: string, body: AssetUpdateRequest) {
+    return this.json<AssetSummary>("PATCH", `/assets/${enc(aid)}`, undefined, body);
+  }
+  /** Soft delete; refused (409 `AssetInUseError`) while any live link still points at it. Restorable for 30 days. */
+  deleteAsset(aid: string) {
+    return this.json<AssetDeleteResponse>("DELETE", `/assets/${enc(aid)}`);
+  }
+  restoreAsset(aid: string) {
+    return this.json<AssetSummary>("POST", `/assets/${enc(aid)}/restore`);
+  }
+  /** 404 `TARGET_NOT_FOUND`, 422 `RoleNotAllowedForTargetError`. `documentId` omitted = a workspace-level link (`target: {kind: "document", id: <the workspace id>}`). */
+  createAssetLink(body: AssetLinkCreateRequest) {
+    return this.json<AssetLink>("POST", "/asset-links", undefined, body);
+  }
+  listDocumentAssetLinks(did: string, query: Partial<DocumentAssetLinksQuery> = {}) {
+    return this.json<AssetLinkWithStaleness[]>("GET", `/documents/${enc(did)}/asset-links`, query as Query);
+  }
+  updateAssetLink(lid: string, body: AssetLinkUpdateRequest) {
+    return this.json<AssetLink>("PATCH", `/asset-links/${enc(lid)}`, undefined, body);
+  }
+  /** Soft delete of the link only (the asset is untouched). */
+  unlinkAsset(lid: string) {
+    return this.json<AssetLinkDeleteResponse>("DELETE", `/asset-links/${enc(lid)}`);
+  }
+  /** Per-target fresh/stale/deleted counts, for a Navigator "Media" column or similar badges. */
+  getDocumentStaleness(did: string, query: Partial<DocumentStalenessQuery> = {}) {
+    return this.json<TargetStaleness[]>("GET", `/documents/${enc(did)}/staleness`, query as Query);
+  }
+  getAssetLinkStaleness(lid: string) {
+    return this.json<LinkStaleness>("GET", `/asset-links/${enc(lid)}/staleness`);
+  }
+
+  /** PUTs one multipart part and returns its `ETag` (unquoted), read from the response header. */
+  private async putUploadPart(url: string, bytes: Uint8Array): Promise<string> {
+    let res: NetworkResponse;
+    try {
+      res = await this.opts.network.request({ method: "PUT", url, body: bytes });
+    } catch (e) {
+      throw new ApiError(e instanceof Error ? e.message : String(e), "NETWORK_ERROR", 0);
+    }
+    if (res.status < 200 || res.status >= 300) this.fail(res);
+    const etag = res.headers["etag"] ?? res.headers["ETag"];
+    if (!etag) throw new ApiError("The upload did not return an ETag for this part", "BAD_RESPONSE", res.status);
+    return etag.replace(/"/g, "");
+  }
+
+  /**
+   * The whole multipart upload plan for one file: init (or resume), PUT every part (`opts.concurrency`, default
+   * `ASSET_UPLOAD_CONCURRENCY` = 3, at a time; each retried `opts.partRetries` times, default 3), then complete.
+   * Resolves with the finished `AssetSummary` (`status: "ready"` unless `asset.derive` is enabled and still running).
+   *
+   * A part that never recovers throws `AssetUploadInterruptedError(uploadId, cause)`: persist `uploadId` (and the file, or
+   * enough to re-open it) and later call `uploadAsset(wid, file, {..., resumeUploadId: uploadId})` to pick up only the
+   * missing parts (`getAssetUpload` under the hood: no bytes already accepted by the storage are sent again).
+   *
+   * Whole-file `sha256Hex` is computed up front (enables server-side dedup before any bytes are sent) only when the file is
+   * at most 64 MiB; past that it is left for the server's own streaming re-hash at `complete` (large media is never fully
+   * buffered twice by this helper).
+   */
+  async uploadAsset(wid: string, file: UploadableFile, opts: UploadAssetOptions): Promise<AssetSummary> {
+    const { blob, name, type, size } = await resolveUploadable(file);
+    const sha256Hex = size <= PREHASH_MAX_BYTES ? await sha256HexOfBlob(blob) : undefined;
+
+    let uploadId: string;
+    let partSizeBytes: number;
+    let pending: AssetPartUrl[];
+    let deduplicated: boolean;
+    const completed: { partNumber: number; etag: string; sizeBytes?: number }[] = [];
+
+    if (opts.resumeUploadId) {
+      const status = await this.getAssetUpload(opts.resumeUploadId);
+      uploadId = status.uploadId;
+      partSizeBytes = status.partSizeBytes;
+      completed.push(...status.completedParts.map(c => ({ partNumber: c.partNumber, etag: c.etag, sizeBytes: c.sizeBytes })));
+      if (status.completedAt) {
+        opts.onProgress?.(1);
+        return this.completeAssetUpload(uploadId, { parts: [] });
+      }
+      const have = new Set(completed.map(c => c.partNumber));
+      const missing = Array.from({ length: status.partCount }, (_, i) => i + 1).filter(n => !have.has(n));
+      pending = missing.length ? (await this.signAssetUploadParts(uploadId, missing)).parts : [];
+      deduplicated = status.partCount === 0;
+    } else {
+      const init = await this.initAssetUpload(wid, {
+        assetId: opts.assetId,
+        filename: name,
+        mimeType: type,
+        sizeBytes: size,
+        sha256Hex,
+        kind: opts.kind,
+        title: opts.title,
+        parentVersionId: opts.parentVersionId,
+        provenance: opts.provenance,
+        rights: opts.rights,
+      });
+      uploadId = init.uploadId;
+      partSizeBytes = init.partSizeBytes;
+      pending = init.parts;
+      deduplicated = init.deduplicated;
+    }
+
+    opts.onProgress?.(0);
+    if (!deduplicated && pending.length > 0) {
+      // resumed parts already accepted by the storage count toward progress too (their size: every part is `partSizeBytes` except a short last one)
+      let sent = completed.reduce((a, c) => a + (c.sizeBytes ?? (c.partNumber < Math.ceil(size / partSizeBytes) ? partSizeBytes : size - (c.partNumber - 1) * partSizeBytes)), 0);
+      let cursor = 0;
+      const concurrency = Math.max(1, Math.min(opts.concurrency ?? ASSET_UPLOAD_CONCURRENCY, pending.length));
+      const retries = Math.max(0, opts.partRetries ?? 3);
+      const worker = async (): Promise<void> => {
+        for (;;) {
+          const i = cursor++;
+          if (i >= pending.length) return;
+          const part = pending[i]!;
+          const start = (part.partNumber - 1) * partSizeBytes;
+          const end = Math.min(size, start + partSizeBytes);
+          const chunk = new Uint8Array(await blob.slice(start, end).arrayBuffer());
+          let attempt = 0;
+          for (;;) {
+            opts.signal?.throwIfAborted();
+            try {
+              const etag = await this.putUploadPart(part.url, chunk);
+              completed.push({ partNumber: part.partNumber, etag });
+              sent += chunk.byteLength;
+              opts.onProgress?.(Math.min(0.99, sent / size));
+              break;
+            } catch (e) {
+              if (attempt++ >= retries) throw e;
+            }
+          }
+        }
+      };
+      try {
+        await Promise.all(Array.from({ length: concurrency }, () => worker()));
+      } catch (e) {
+        throw new AssetUploadInterruptedError(`The upload (${uploadId}) stopped before every part finished`, uploadId, e);
+      }
+    }
+    const asset = await this.completeAssetUpload(uploadId, { parts: completed, sha256Hex });
+    opts.onProgress?.(1);
+    return asset;
+  }
+
   // ─── templates ───────────────────────────────────────────────────────────
 
-  listTemplates(category?: string) {
-    return this.json<TemplateSummary[]>("GET", "/templates", { category });
+  /**
+   * Built-ins plus the caller's own (`user`) and their workspaces' (`workspace`) templates. `filter` is a category or
+   * `{category?, workspaceId?, scope?}` (`workspaceId` narrows the workspace ones to that workspace).
+   */
+  listTemplates(filter?: string | Partial<TemplateListQuery>) {
+    const q: Partial<TemplateListQuery> = typeof filter === "string" ? { category: filter } : (filter ?? {});
+    return this.json<TemplateSummary[]>("GET", "/templates", { category: q.category, workspaceId: q.workspaceId, scope: q.scope });
   }
-  /** Full template body; `idOrKey` is the template id or its built-in key. */
-  getTemplate(idOrKey: string) {
-    return this.json<TemplateJSON>("GET", `/templates/${enc(idOrKey)}`);
+  /** Full template body; `idOrKey` is the template id or its built-in key; `version` an older version of a stored template. */
+  getTemplate(idOrKey: string, version?: number) {
+    return this.json<TemplateJSON>("GET", `/templates/${enc(idOrKey)}`, { version });
+  }
+  /** Version 1 of a `user` or `workspace` template. 422 `TEMPLATE_INVALID` (`TemplateInvalidError.issues`). */
+  createTemplate(body: TemplateCreateRequest) {
+    return this.json<TemplateSummary>("POST", "/templates", undefined, body);
+  }
+  /** Version n+1 (old versions never change; documents update only when they apply it). 409 `BUILTIN_IMMUTABLE`. */
+  createTemplateVersion(tid: string, template: TemplateVersionCreateRequest["template"]) {
+    return this.json<TemplateSummary>("POST", `/templates/${enc(tid)}/versions`, undefined, { template });
+  }
+  updateTemplate(tid: string, patch: TemplateUpdateRequest) {
+    return this.json<TemplateSummary>("PATCH", `/templates/${enc(tid)}`, undefined, patch);
+  }
+  /** Archives it: hidden from lists, cannot start documents; existing documents keep their copy. */
+  deleteTemplate(tid: string) {
+    return this.json<TemplateArchiveResponse>("DELETE", `/templates/${enc(tid)}`);
+  }
+  /**
+   * A `.fwtemplate` / `.fwtemplate.json` file, inline or by `{importId}` (upload flow: `createImportJob({templateTarget})`, `putUpload`,
+   * then this). `.fadein.template` and `.fdxt` answer 400 `UNSUPPORTED_FORMAT` (not built yet).
+   */
+  importTemplate(input: ImportTemplateArg) {
+    if ("importId" in input) return this.json<TemplateSummary>("POST", "/templates/import", undefined, { importId: input.importId });
+    const { bytes, contentB64, ...rest } = input;
+    return this.json<TemplateSummary>("POST", "/templates/import", undefined, { ...rest, contentB64: contentB64 ?? bytesToBase64(toUint8Array(bytes as BinaryInput)) });
+  }
+  /** The template as a `.fwtemplate.json` file (`fadein-template` and `fdxt` are 400 `UNSUPPORTED_FORMAT`). */
+  async exportTemplate(tid: string, opts: { format?: TemplateFileFormat | "json"; version?: number } = {}): Promise<ExportedTemplate> {
+    const r = await this.json<TemplateExportResponse>("GET", `/templates/${enc(tid)}/export`, { format: opts.format, version: opts.version });
+    return { filename: r.filename, mimeType: r.mimeType, bytes: base64ToBytes(r.contentB64), format: r.format };
   }
 
   // ─── versions ────────────────────────────────────────────────────────────
@@ -630,6 +1451,29 @@ export class ScreenwriterClient {
   /** Pin a version point as a manual snapshot. */
   snapshotVersion(did: string, vid: string, body: VersionSnapshotRequest) {
     return this.json<SnapshotSummary>("POST", `/documents/${enc(did)}/versions/${enc(vid)}/snapshot`, undefined, body);
+  }
+
+  /**
+   * B15: a NEW document (epoch 0, same element ids, `forkedFrom` in its meta) from a version point. The source is untouched:
+   * no epoch bump, no pre-restore snapshot, so no open editor rebases. Needs `version.restoreAsCopy` (writer) and `document.create`.
+   */
+  restoreVersionAsCopy(did: string, vid: string, body: VersionRestoreAsCopyRequest) {
+    return this.json<DocumentMeta>("POST", `/documents/${enc(did)}/versions/${enc(vid)}/restore-as-copy`, undefined, body);
+  }
+  /** Per-line history of one element, newest first: `update` entries (author sessions, last 7 days of the raw log) then `version` points. */
+  getElementHistory(did: string, elementId: string, query: Partial<CursorQuery> = {}) {
+    return this.json<Paginated<ElementHistoryEntry>>("GET", `/documents/${enc(did)}/elements/${enc(elementId)}/history`, query);
+  }
+  /** Who has the document open right now (one entry per device). */
+  getPresence(did: string) {
+    return this.json<PresenceEntry[]>("GET", `/documents/${enc(did)}/presence`);
+  }
+  /**
+   * Element-level diff of any two `SourceRef`s (live, snapshot, version). `granularity` `scene` | `element` (default) | `word`. Answers are cached
+   * server-side per (base, target, options). 413 `COMPARE_TOO_LARGE` (`CompareTooLargeError`) past 400 combined pages.
+   */
+  compare(did: string, body: CompareRequest) {
+    return this.json<DocumentDiff>("POST", `/documents/${enc(did)}/compare`, undefined, body);
   }
 
   // ─── snapshots ───────────────────────────────────────────────────────────
@@ -658,6 +1502,41 @@ export class ScreenwriterClient {
   forkSnapshot(sid: string, body: SnapshotForkRequest) {
     return this.json<DocumentMeta>("POST", `/snapshots/${enc(sid)}/fork`, undefined, body);
   }
+  /** Hide or show a snapshot for the caller only (`snapshot_user_prefs`; the snapshot never changes). */
+  setSnapshotPrefs(sid: string, hidden: boolean) {
+    return this.json<SnapshotPrefsResponse>("PUT", `/snapshots/${enc(sid)}/prefs`, undefined, { hidden } satisfies SnapshotPrefsRequest);
+  }
+  /** Oldest first. */
+  listSnapshotNotes(sid: string) {
+    return this.json<SnapshotNote[]>("GET", `/snapshots/${enc(sid)}/notes`);
+  }
+  /** Append-only (no edit, no delete); 409 `LIMIT_EXCEEDED` (`LimitExceededError`, `.limit` 200) past 200 per snapshot. */
+  addSnapshotNote(sid: string, body: string) {
+    return this.json<SnapshotNote>("POST", `/snapshots/${enc(sid)}/notes`, undefined, { body } satisfies SnapshotNoteCreateRequest);
+  }
+  listSnapshotComments(sid: string, query: Partial<CursorQuery> = {}) {
+    return this.json<Paginated<SnapshotComment>>("GET", `/snapshots/${enc(sid)}/comments`, query);
+  }
+  /** Review comment on an immutable snapshot (`document.comment`); 404 `ANCHOR_NOT_FOUND` (`AnchorNotFoundError`) if the anchor does not resolve in it. */
+  addSnapshotComment(sid: string, body: SnapshotCommentCreateRequest) {
+    return this.json<SnapshotComment>("POST", `/snapshots/${enc(sid)}/comments`, undefined, body);
+  }
+  /** Turns the comment into a note in the LIVE document (writer); 404 `ANCHOR_NOT_FOUND` when the commented text is gone. Idempotent. */
+  copyCommentToLive(cid: string) {
+    return this.json<CopyToLiveResponse>("POST", `/snapshot-comments/${enc(cid)}/copy-to-live`);
+  }
+  resolveSnapshotComment(cid: string, resolved: boolean) {
+    return this.json<SnapshotComment>("POST", `/snapshot-comments/${enc(cid)}/resolve`, undefined, { resolved } satisfies SnapshotCommentResolveRequest);
+  }
+  /**
+   * Offline-edits (and any client-side) snapshot: uploads `state` (a Yjs V2 update of the replica, exactly what the writer saw) through
+   * `/uploads/state` and files it. With `sourceEpoch` older than the live epoch it is stored under `assumedParentId`, never re-parents
+   * the live document and is never merged into it (spec 03 §6.3). Idempotent on `clientSnapshotId` (use `offline-edits:<deviceId>:<oldEpoch>`).
+   */
+  async createSnapshotFromState(did: string, state: Uint8Array, body: Omit<SnapshotCreateRequest, "state">) {
+    const uploadKey = await this.uploadStateBytes(state);
+    return this.createSnapshot(did, { ...body, state: { uploadKey } });
+  }
 
   // ─── API keys (B6) ───────────────────────────────────────────────────────
 
@@ -674,6 +1553,123 @@ export class ScreenwriterClient {
   }
   revokeApiKey(kid: string) {
     return this.json<ApiKeyRevokeResponse>("DELETE", `/api-keys/${enc(kid)}`);
+  }
+
+  // ─── account and per-user data (B13) ─────────────────────────────────────
+
+  /** The user's preferences plus `updatedAt`, the token `setPreferences` sends back as `baseUpdatedAt`. */
+  getPreferences() {
+    return this.json<UserPreferencesResponse>("GET", "/me/preferences");
+  }
+  /**
+   * Sets top-level preference keys (`null` removes one) on top of the server copy: a whole-document PUT guarded by
+   * `baseUpdatedAt`. Pass `base` (the last `getPreferences` / `setPreferences` result) to skip the read. On 409 `STALE_WRITE`
+   * (another device wrote first) the server copy in `details.current` is merged per top-level key, this call's keys winning,
+   * and the PUT is retried once; a second `StaleWriteError` reaches the caller. Returns the resulting document.
+   */
+  async setPreferences(update: UserPreferencesUpdate, base?: UserPreferencesResponse): Promise<UserPreferencesResponse> {
+    let current = base ?? (await this.getPreferences());
+    for (let attempt = 0; ; attempt++) {
+      const next = mergeTopLevel<UserPreferences>(current, update as never);
+      try {
+        const put = await this.json<UserPreferencesPutResponse>("PUT", "/me/preferences", undefined, { ...next, baseUpdatedAt: current.updatedAt });
+        return { ...next, updatedAt: put.updatedAt };
+      } catch (e) {
+        const server = e instanceof StaleWriteError ? e.current : undefined;
+        if (attempt === 0 && server) {
+          current = server as UserPreferencesResponse;
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+
+  /** The synced spelling dictionary, sorted. */
+  getDictionary() {
+    return this.json<DictionaryResponse>("GET", "/me/dictionary");
+  }
+  /** Adds and removes words in one call; answers the new word count. 409 `LIMIT_EXCEEDED` past 50,000. */
+  updateDictionary(body: DictionaryUpdateRequest) {
+    return this.json<DictionaryUpdateResponse>("PUT", "/me/dictionary", undefined, body);
+  }
+
+  listMacros() {
+    return this.json<UserMacro[]>("GET", "/me/macros");
+  }
+  /** 409 `MACRO_TRIGGER_TAKEN` (a `MacroTriggerTakenError`) when the shortcut or alias is in use, 409 `LIMIT_EXCEEDED` past 500. */
+  createMacro(body: UserMacroCreateRequest) {
+    return this.json<UserMacro>("POST", "/me/macros", undefined, body);
+  }
+  updateMacro(mid: string, patch: UserMacroPatchRequest) {
+    return this.json<UserMacro>("PATCH", `/me/macros/${enc(mid)}`, undefined, patch);
+  }
+  deleteMacro(mid: string) {
+    return this.json<DeleteResponse>("DELETE", `/me/macros/${enc(mid)}`);
+  }
+
+  /** Buckets (zero-filled) and streak in the user's time zone; default the last 30 days by day. */
+  getWritingStats(query: WritingStatsQuery = {}) {
+    return this.json<WritingStats>("GET", "/me/writing-stats", { from: query.from, to: query.to, granularity: query.granularity, documentId: query.documentId });
+  }
+  /**
+   * Idempotent on `clientSessionId` (make one with `newWritingSessionId()` when the session starts): a device may upload a
+   * session recorded offline whenever it is back online, and may retry freely; a repeat changes nothing.
+   */
+  recordWritingSession(body: WritingSessionRequest) {
+    return this.json<WritingSessionResponse>("POST", "/me/writing-sessions", undefined, body);
+  }
+  getWritingGoals() {
+    return this.json<WritingGoal[]>("GET", "/me/writing-goals");
+  }
+  /** Replaces the whole list (a goal left out is deleted, one without `id` is created); 409 `LIMIT_EXCEEDED` past 50. */
+  setWritingGoals(goals: WritingGoalInput[]) {
+    return this.json<WritingGoal[]>("PUT", "/me/writing-goals", undefined, { goals });
+  }
+
+  /** Starts the `account.export` job (one at a time: 409 `JOB_ALREADY_RUNNING`). Follow it with `getJob` / `useJob`, then `getJobOutputs`. */
+  requestAccountExport() {
+    return this.json<Job>("POST", "/me/export");
+  }
+  /**
+   * Schedules the account for deletion (30-day grace, `restoreAccount` cancels). Needs a sign-in within 5 minutes
+   * (`ReauthRequiredError`) and no team workspace the person solely owns (`OwnsTeamWorkspaceError`, `.workspaces`).
+   */
+  deleteAccount() {
+    return this.json<AccountDeleteResponse>("DELETE", "/me", undefined, { confirm: ACCOUNT_DELETE_CONFIRM });
+  }
+  restoreAccount() {
+    return this.json<AccountRestoreResponse>("POST", "/me/restore");
+  }
+
+  /** The caller's own view state of a document (`{}` until first saved). A viewer may read and save theirs. */
+  getMyDocumentState(did: string) {
+    return this.json<DocumentViewStateResponse>("GET", `/documents/${enc(did)}/my-state`);
+  }
+  /** Same merge-and-retry-once as `setPreferences`, per top-level key (`navigator`, `layout`, `views`). The lib debounces calls. */
+  async setMyDocumentState(did: string, update: DocumentViewStateUpdate, base?: DocumentViewStateResponse): Promise<DocumentViewStateResponse> {
+    let current = base ?? (await this.getMyDocumentState(did));
+    for (let attempt = 0; ; attempt++) {
+      const next = mergeTopLevel<DocumentViewState>(current, update as never);
+      try {
+        const put = await this.json<DocumentViewStatePutResponse>("PUT", `/documents/${enc(did)}/my-state`, undefined, { ...next, baseUpdatedAt: current.updatedAt ?? null });
+        return { ...next, updatedAt: put.updatedAt };
+      } catch (e) {
+        const server = e instanceof StaleWriteError ? e.current : undefined;
+        if (attempt === 0 && server) {
+          current = server as DocumentViewStateResponse;
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+  /** Stars are per user; both calls are idempotent and need only `document.read`. */
+  starDocument(did: string) {
+    return this.json<StarResponse>("PUT", `/documents/${enc(did)}/star`);
+  }
+  unstarDocument(did: string) {
+    return this.json<StarResponse>("DELETE", `/documents/${enc(did)}/star`);
   }
 
   // ─── AI (B7) ─────────────────────────────────────────────────────────────
@@ -745,6 +1741,288 @@ export class ScreenwriterClient {
   rejectSuggestions(ssid: string, suggestionIds?: string[]) {
     return this.json<SuggestionSet>("POST", `/ai/suggestion-sets/${enc(ssid)}/reject`, undefined, suggestionIds ? { suggestionIds } : {});
   }
+  /** Combined accept-and-reject in one call, with `dryRun` and `"allPending"`. Accept stays atomic (one stale
+   *  suggestion is reported in `skippedStale`, not a thrown error); a bulk accept auto-snapshots first. */
+  decideSuggestions(ssid: string, body: SuggestionDecideRequest) {
+    return this.json<SuggestionDecideResponse>("POST", `/ai/suggestion-sets/${enc(ssid)}/decide`, undefined, body);
+  }
+
+  // ─── B17 AI completion and credits ────────────────────────────────────────
+
+  getAiConsent() {
+    return this.json<AiConsentStatus>("GET", "/me/ai-consents");
+  }
+  /** `version` must equal the server's current `AI_CONSENT_VERSION` (from `getAiConsent()`), else `ApiError` `VALIDATION`. */
+  acceptAiConsent(body: AiConsentAcceptRequest) {
+    return this.json<AiConsentAcceptResponse>("POST", "/me/ai-consents", undefined, body);
+  }
+  listMyAiActivity(query: { limit?: number; cursor?: string; documentId?: string } = {}) {
+    return this.json<Paginated<AiActivityItem>>("GET", "/me/ai-activity", query as Query);
+  }
+  listWorkspaceAiActivity(wid: string, query: { limit?: number; cursor?: string; userId?: string; documentId?: string } = {}) {
+    return this.json<Paginated<AiActivityItem & { userId: string }>>("GET", `/workspaces/${enc(wid)}/ai-activity`, query as Query);
+  }
+  /** The live credit estimate before the user confirms, computed with the same pricing function the eventual charge uses. */
+  estimateAiJob(did: string, body: AiEstimateRequest) {
+    return this.json<AiEstimateResponse>("POST", `/documents/${enc(did)}/ai/estimate`, undefined, body);
+  }
+  listAiReports(did: string, query: { limit?: number; cursor?: string; task?: string } = {}) {
+    return this.json<Paginated<AiReportSummary>>("GET", `/documents/${enc(did)}/ai/reports`, query as Query);
+  }
+  getAiReport(did: string, jobId: string) {
+    return this.json<CoverageReport>("GET", `/documents/${enc(did)}/ai/reports/${enc(jobId)}`);
+  }
+  /** `noteId` is `"strengths:<i>" | "weaknesses:<i>" | "sceneNotes:<i>"` from the report itself (its position, since a report has no independently stable note ids). */
+  convertAiNote(did: string, jobId: string, noteId: string) {
+    return this.json<AiNoteConvertResponse>("POST", `/documents/${enc(did)}/ai/reports/${enc(jobId)}/notes/${enc(noteId)}/convert`);
+  }
+
+  getCreditsBalance() {
+    return this.json<ConsumableBalanceResponse>("GET", "/consumables/balance");
+  }
+  listCreditPurchases(query: { limit?: number; offset?: number } = {}) {
+    return this.json<ConsumablePurchaseRecord[]>("GET", "/consumables/purchases", query as Query);
+  }
+  listCreditUsages(query: { limit?: number; offset?: number } = {}) {
+    return this.json<ConsumableUsageRecord[]>("GET", "/consumables/usages", query as Query);
+  }
+  /** Public: works signed out (a pricing/signup page). */
+  listCreditProducts() {
+    return this.json<CreditProduct[]>("GET", "/consumables/products", undefined, undefined, "none");
+  }
+  /** Lets a platform with no in-app purchase (Windows) send the user to a web purchase page already signed in. */
+  createPurchaseHandoff(body: PurchaseHandoffRequest) {
+    return this.json<PurchaseHandoffResponse>("POST", "/purchases/handoff", undefined, body);
+  }
+
+  // ─── B12 collaboration, notifications, devices, email ────────────────────
+
+  getNotificationPrefs() {
+    return this.json<NotificationPrefs>("GET", "/me/notification-prefs");
+  }
+  setNotificationPrefs(update: NotificationPrefsUpdate) {
+    return this.json<NotificationPrefs>("PUT", "/me/notification-prefs", undefined, update);
+  }
+  /** Reads `X-Unread-Count` (spec 05 §6.16), so the badge count is one call, not a second query. */
+  async listNotifications(query: Partial<NotificationsQuery> = {}): Promise<Paginated<Notification> & { unreadCount: number }> {
+    const res = await this.send("GET", "/notifications", query as Query);
+    if (res.status < 200 || res.status >= 300) this.fail(res);
+    const env = JSON.parse(new TextDecoder().decode(res.body)) as { success: true; data: Paginated<Notification> };
+    return { ...env.data, unreadCount: Number(res.headers["x-unread-count"] ?? 0) };
+  }
+  markNotificationsRead(body: NotificationsReadRequest) {
+    return this.json<NotificationsReadResponse>("POST", "/notifications/read", undefined, body);
+  }
+  deleteNotification(nid: string) {
+    return this.json<NotificationDeleteResponse>("DELETE", `/notifications/${enc(nid)}`);
+  }
+  /**
+   * `EventSource` cannot send an `Authorization` header, so this reads the SSE response body as a raw fetch stream:
+   * events `notification` / `unread_count` (plus a `heartbeat` every 25 s to keep the connection alive across
+   * proxies). Reconnects with full-jitter backoff (`sync/backoff.ts`) on any drop; `close()` stops it for good.
+   */
+  openNotificationStream(onEvent: (evt: NotificationStreamEvent) => void, opts: NotificationStreamOptions = {}): NotificationStreamHandle {
+    const fetchImpl = opts.fetchImpl ?? ((...args: Parameters<typeof fetch>) => globalThis.fetch(...args));
+    let stopped = false;
+    let attempt = 0;
+    let controller: AbortController | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const parseChunk = (chunk: string) => {
+      let event = "message";
+      const dataLines: string[] = [];
+      for (const line of chunk.split("\n")) {
+        if (line.startsWith("event:")) event = line.slice(6).trim();
+        else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+      }
+      if (dataLines.length === 0) return;
+      const raw = dataLines.join("\n");
+      let data: unknown = raw;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        /* keep the raw string */
+      }
+      onEvent({ event: event as NotificationStreamEvent["event"], data });
+    };
+
+    const scheduleReconnect = () => {
+      if (stopped) return;
+      opts.onStatus?.("closed");
+      const delay = backoffDelay(attempt++, opts.random);
+      retryTimer = setTimeout(() => void connect(), delay);
+    };
+
+    const connect = async () => {
+      if (stopped) return;
+      controller = new AbortController();
+      opts.onStatus?.("connecting");
+      try {
+        const token = await this.opts.getToken();
+        const headers: Record<string, string> = { Accept: "text/event-stream" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetchImpl(this.url("/notifications/stream"), { headers, signal: controller.signal });
+        if (!res.ok || !res.body) throw new Error(`notification stream HTTP ${res.status}`);
+        opts.onStatus?.("open");
+        attempt = 0;
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let idx: number;
+          while ((idx = buf.indexOf("\n\n")) >= 0) {
+            parseChunk(buf.slice(0, idx));
+            buf = buf.slice(idx + 2);
+          }
+        }
+      } catch {
+        // network error, abort, or a non-OK/streaming response: fall through to reconnect unless stopped
+      } finally {
+        scheduleReconnect();
+      }
+    };
+
+    void connect();
+    return {
+      close() {
+        stopped = true;
+        controller?.abort();
+        if (retryTimer) clearTimeout(retryTimer);
+      },
+    };
+  }
+
+  listMentionsWithoutAccess(did: string) {
+    return this.json<MentionWithoutAccess[]>("GET", `/documents/${enc(did)}/mentions-without-access`);
+  }
+  listChat(did: string, query: Partial<ChatQuery> = {}) {
+    return this.json<Paginated<ChatMessage>>("GET", `/documents/${enc(did)}/chat`, query as Query);
+  }
+  /** `clientMessageId` defaults to a fresh `msg_...` id (idempotent: a retried send is safe). */
+  sendChatMessage(did: string, body: Omit<ChatMessageCreateRequest, "clientMessageId"> & { clientMessageId?: string }) {
+    const clientMessageId = body.clientMessageId ?? newChatMessageId();
+    return this.json<ChatMessage>("POST", `/documents/${enc(did)}/chat`, undefined, { ...body, clientMessageId });
+  }
+  editChatMessage(mid: string, body: ChatMessageUpdateRequest) {
+    return this.json<ChatMessage>("PATCH", `/chat-messages/${enc(mid)}`, undefined, body);
+  }
+  deleteChatMessage(mid: string) {
+    return this.json<ChatMessageDeleteResponse>("DELETE", `/chat-messages/${enc(mid)}`);
+  }
+  listDocumentActivity(did: string, query: Partial<ActivityQuery> = {}) {
+    const { kinds, ...rest } = query;
+    return this.json<Paginated<ActivityEvent>>("GET", `/documents/${enc(did)}/activity`, { ...rest, kinds: kinds?.join(",") });
+  }
+  listWorkspaceActivity(wid: string, query: Partial<WorkspaceActivityQuery> = {}) {
+    return this.json<Paginated<WorkspaceActivityEvent>>("GET", `/workspaces/${enc(wid)}/activity`, query as Query);
+  }
+  /** `currentDeviceId` marks that one `current: true` in the result (not a spec query param, but harmless: the caller already knows its own device id). */
+  listDevices(currentDeviceId?: string) {
+    return this.json<Device[]>("GET", "/devices", currentDeviceId ? { deviceId: currentDeviceId } : undefined);
+  }
+  registerDevice(body: DeviceCreateRequest) {
+    return this.json<DeviceCreateResponse>("POST", "/devices", undefined, body);
+  }
+  updateDevice(devid: string, body: DeviceUpdateRequest) {
+    return this.json<Device>("PATCH", `/devices/${enc(devid)}`, undefined, body);
+  }
+  revokeDevice(devid: string) {
+    return this.json<DeviceRevokeResponse>("POST", `/devices/${enc(devid)}/revoke`);
+  }
+  setPushToken(devid: string, body: PushTokenSetRequest) {
+    return this.json<PushTokenSetResponse>("PUT", `/devices/${enc(devid)}/push-token`, undefined, body);
+  }
+  clearPushToken(devid: string) {
+    return this.json<PushTokenDeleteResponse>("DELETE", `/devices/${enc(devid)}/push-token`);
+  }
+
+  // ─── B18 public, admin, telemetry ─────────────────────────────────────────
+
+  /** No auth: works signed out. */
+  listPublicTemplates(category?: string) {
+    return this.json<TemplateSummary[]>("GET", "/public/templates", { category }, undefined, "none");
+  }
+  getPublicTemplate(builtinKey: string) {
+    return this.json<TemplateJSON>("GET", `/public/templates/${enc(builtinKey)}`, undefined, undefined, "none");
+  }
+  /** The single client-policy route (R31): raises `ClientOutdatedError` itself only via the normal error path (a
+   *  426 response to THIS call would be unusual — clients read `minClientVersion` from the body to decide, before
+   *  they are the ones being gated on a later call). */
+  getPublicConfig() {
+    return this.json<PublicConfig>("GET", "/public/config", undefined, undefined, "none");
+  }
+  getNamesDb(version: number) {
+    return this.json<NamesDbResponse>("GET", `/public/names-db/${version}`, undefined, undefined, "none");
+  }
+  getDeepHealth() {
+    return this.json<DeepHealthResponse>("GET", "/public/health/deep", undefined, undefined, "none");
+  }
+  getWatermarkedDownload(exportId: string, token: string) {
+    return this.json<WatermarkedDownloadInfo>("GET", `/public/watermarked/${enc(exportId)}/${enc(token)}`, undefined, undefined, "none");
+  }
+  redeemPurchaseHandoff(body: PurchaseHandoffRedeemRequest) {
+    return this.json<PurchaseHandoffRedeemResponse>("POST", "/public/purchases/handoff/redeem", undefined, body, "none");
+  }
+  /** `U,P`: sends the bearer so the server can attribute the report when the caller is signed in; the route accepts
+   *  anonymous too. Never throws — telemetry must not itself break the app (a failed `getToken()` for a signed-out
+   *  visitor, or a network error, both just mean nothing was recorded). */
+  async sendTelemetry(body: TelemetryRequest): Promise<TelemetryResponse> {
+    try {
+      return await this.json<TelemetryResponse>("POST", "/telemetry", undefined, body, "user");
+    } catch {
+      return { accepted: false };
+    }
+  }
+
+  /** Admin (spec 05 §6.23): `siteAdmin` on a user principal only. Used only by an admin page. */
+  adminLookupUser(email: string) {
+    return this.json<AdminUserLookup>("GET", "/admin/users", { email });
+  }
+  adminRestoreUser(uid: string) {
+    return this.json<AdminUserRestoreResponse>("POST", `/admin/users/${enc(uid)}/restore`);
+  }
+  adminPurgeUser(uid: string) {
+    return this.json<AdminUserPurgeResponse>("DELETE", `/admin/users/${enc(uid)}`);
+  }
+  adminListJobs(query: AdminJobListQuery = {}) {
+    return this.json<Paginated<Job>>("GET", "/admin/jobs", query as Query);
+  }
+  adminRetryJob(jobId: string) {
+    return this.json<Job>("POST", `/admin/jobs/${enc(jobId)}/retry`);
+  }
+  adminRefundJob(jobId: string, body: AdminJobRefundRequest = {}) {
+    return this.json<AdminJobRefundResponse>("POST", `/admin/jobs/${enc(jobId)}/refund`, undefined, body);
+  }
+  adminUpdateJobKind(kind: string, patch: AdminJobKindPatchRequest) {
+    return this.json<AdminJobKind>("PATCH", `/admin/job-kinds/${enc(kind)}`, undefined, patch);
+  }
+  adminGetDocumentMeta(did: string) {
+    return this.json<AdminDocumentMeta>("GET", `/admin/documents/${enc(did)}/meta`);
+  }
+}
+
+/** One SSE event from `openNotificationStream`. */
+export interface NotificationStreamEvent {
+  event: "notification" | "unread_count" | "heartbeat" | string;
+  data: unknown;
+}
+export interface NotificationStreamOptions {
+  onStatus?: (status: "connecting" | "open" | "closed") => void;
+  /** Test seam: a fake `fetch` returning a streamed `Response`. */
+  fetchImpl?: typeof fetch;
+  /** Test seam for the reconnect backoff. */
+  random?: () => number;
+}
+export interface NotificationStreamHandle {
+  close(): void;
+}
+
+/** A fresh `clientMessageId` for `sendChatMessage` (`msg_` + 32 hex-ish chars). */
+export function newChatMessageId(): string {
+  return `msg_${newIdempotencyKey().replace(/[^A-Za-z0-9]/g, "").padEnd(32, "0").slice(0, 32)}`;
 }
 
 /**
@@ -788,6 +2066,17 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   snapshotContent: "getSnapshotContent",
   snapshotOpen: "openSnapshot",
   snapshotFork: "forkSnapshot",
+  elementHistory: "getElementHistory",
+  documentPresence: "getPresence",
+  versionRestoreAsCopy: "restoreVersionAsCopy",
+  snapshotPrefs: "setSnapshotPrefs",
+  snapshotNotesList: "listSnapshotNotes",
+  snapshotNoteCreate: "addSnapshotNote",
+  snapshotCommentsList: "listSnapshotComments",
+  snapshotCommentCreate: "addSnapshotComment",
+  snapshotCommentCopyToLive: "copyCommentToLive",
+  snapshotCommentResolve: "resolveSnapshotComment",
+  documentCompare: "compare",
   // B5 commands and live scene reads
   commands: "applyCommands",
   outline: "getOutline",
@@ -817,6 +2106,35 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   jobOutputs: "getJobOutputs",
   jobRecipients: "listJobRecipients",
   jobWebhook: null, // provider-to-server call (HMAC): a client never makes it
+  // B10 projection reads, search, reports, packets
+  entitiesList: "listEntities",
+  entityGet: "getEntity",
+  entityUsage: "getEntityUsage",
+  entityDialogue: "getEntityDialogue",
+  tagCategoriesList: "listTagCategories",
+  tagsList: "listTags",
+  notesList: "listNotes",
+  beatsList: "listBeats",
+  binList: "getBin",
+  revisionsGet: "listRevisions",
+  changesList: "listChanges",
+  alternatesGet: "getAlternates",
+  titlePageGet: "getTitlePage",
+  statsGet: "getStats",
+  fountainGet: "getFountain",
+  sceneShotsList: "listSceneShots",
+  resolveBatch: "resolveLocators",
+  resolveOne: "resolveLocator",
+  documentSearch: "searchDocument",
+  workspaceSearch: "searchWorkspace",
+  search: "search",
+  reportKinds: "getReportKinds",
+  reportGet: "getReport",
+  reportCreate: "createReport",
+  packetScene: "getScenePacket",
+  packetCharacter: "getCharacterPacket",
+  packetLocation: "getLocationPacket",
+  packetShot: "getShotPacket",
   // B8 tenancy, roles, sharing
   workspaceCreate: "createWorkspace",
   workspaceUpdate: "updateWorkspace",
@@ -855,4 +2173,129 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   publicShareResolve: "resolveShareLink",
   shareUnlock: "unlockShareLink",
   shareState: "getSharedState",
+  // B13 account and per-user data
+  meDictionaryGet: "getDictionary",
+  meDictionaryUpdate: "updateDictionary",
+  mePreferencesGet: "getPreferences",
+  mePreferencesSet: "setPreferences",
+  meMacrosList: "listMacros",
+  meMacroCreate: "createMacro",
+  meMacroUpdate: "updateMacro",
+  meMacroDelete: "deleteMacro",
+  meWritingStats: "getWritingStats",
+  meWritingSessionCreate: "recordWritingSession",
+  meWritingGoalsGet: "getWritingGoals",
+  meWritingGoalsSet: "setWritingGoals",
+  meExport: "requestAccountExport",
+  meDelete: "deleteAccount",
+  meRestore: "restoreAccount",
+  documentMyStateGet: "getMyDocumentState",
+  documentMyStateSet: "setMyDocumentState",
+  documentStar: "starDocument",
+  documentUnstar: "unstarDocument",
+  // B14 project, document and template lifecycle, workspace settings
+  workspaceDocuments: "listWorkspaceDocuments",
+  workspaceTrash: "listTrash",
+  workspaceTrashEmpty: "emptyTrash",
+  projectPurge: "deleteProject",
+  projectDuplicate: "duplicateProject",
+  projectFolderCreate: "createFolder",
+  projectFolderUpdate: "updateFolder",
+  projectFolderDelete: "deleteFolder",
+  documentMove: "moveDocument",
+  documentPurge: "purgeDocument",
+  documentDuplicate: "duplicateDocument",
+  documentApplyTemplate: "applyTemplate",
+  templateCreate: "createTemplate",
+  templateVersionCreate: "createTemplateVersion",
+  templateUpdate: "updateTemplate",
+  templateDelete: "deleteTemplate",
+  templateImport: "importTemplate",
+  templateExport: "exportTemplate",
+  projectBinList: "listProjectBin",
+  projectBinCreate: "addToProjectBin",
+  projectBinDelete: "removeFromProjectBin",
+  workspaceDefaultsGet: "getWorkspaceDefaults",
+  workspaceDefaultsSet: "setWorkspaceDefaults",
+  workspaceContactsList: "listContacts",
+  workspaceContactsCreate: "createContacts",
+  workspaceContactUpdate: "updateContact",
+  workspaceContactDelete: "deleteContact",
+  // B16 imports, exports and watermark as jobs
+  uploadState: "uploadState",
+  importCreate: "createImportJob",
+  importStart: "startImport",
+  documentImportOver: "importOver",
+  documentExportCreate: "createExportJob",
+  documentExportCombined: "exportCombined",
+  watermarkLookup: "lookupWatermark",
+  // B11 assets and R2
+  assetUploadCreate: "initAssetUpload",
+  assetUploadGet: "getAssetUpload",
+  assetUploadParts: "signAssetUploadParts",
+  assetUploadComplete: "completeAssetUpload",
+  assetUploadAbort: "abortAssetUpload",
+  assetsList: "listAssets",
+  assetGet: "getAsset",
+  assetUrl: "getAssetUrl",
+  assetUpdate: "updateAsset",
+  assetDelete: "deleteAsset",
+  assetRestore: "restoreAsset",
+  assetLinkCreate: "createAssetLink",
+  documentAssetLinks: "listDocumentAssetLinks",
+  assetLinkUpdate: "updateAssetLink",
+  assetLinkDelete: "unlinkAsset",
+  documentStaleness: "getDocumentStaleness",
+  assetLinkStaleness: "getAssetLinkStaleness",
+  // B12 collaboration, notifications, devices, email
+  meNotificationPrefsGet: "getNotificationPrefs",
+  meNotificationPrefsSet: "setNotificationPrefs",
+  documentMentionsWithoutAccess: "listMentionsWithoutAccess",
+  documentChatList: "listChat",
+  documentChatCreate: "sendChatMessage",
+  chatMessageUpdate: "editChatMessage",
+  chatMessageDelete: "deleteChatMessage",
+  documentActivity: "listDocumentActivity",
+  workspaceActivity: "listWorkspaceActivity",
+  notificationsList: "listNotifications",
+  notificationsRead: "markNotificationsRead",
+  notificationDelete: "deleteNotification",
+  notificationsStream: "openNotificationStream",
+  devicesList: "listDevices",
+  deviceCreate: "registerDevice",
+  deviceUpdate: "updateDevice",
+  deviceRevoke: "revokeDevice",
+  devicePushTokenSet: "setPushToken",
+  devicePushTokenDelete: "clearPushToken",
+  meAiConsentGet: "getAiConsent",
+  meAiConsentAccept: "acceptAiConsent",
+  meAiActivity: "listMyAiActivity",
+  workspaceAiActivity: "listWorkspaceAiActivity",
+  aiEstimate: "estimateAiJob",
+  aiReportsList: "listAiReports",
+  aiReportGet: "getAiReport",
+  aiReportNoteConvert: "convertAiNote",
+  aiSuggestionSetDecide: "decideSuggestions",
+  consumablesBalance: "getCreditsBalance",
+  consumablesPurchases: "listCreditPurchases",
+  consumablesUsages: "listCreditUsages",
+  consumablesProducts: "listCreditProducts",
+  consumablesWebhook: null, // provider-called, no client method
+  purchaseHandoffCreate: "createPurchaseHandoff",
+  publicTemplatesList: "listPublicTemplates",
+  publicTemplateGet: "getPublicTemplate",
+  publicConfig: "getPublicConfig",
+  publicNamesDb: "getNamesDb",
+  publicHealthDeep: "getDeepHealth",
+  publicWatermarkedGet: "getWatermarkedDownload",
+  purchaseHandoffRedeem: "redeemPurchaseHandoff",
+  telemetryCreate: "sendTelemetry",
+  adminUsersLookup: "adminLookupUser",
+  adminUserRestore: "adminRestoreUser",
+  adminUserPurge: "adminPurgeUser",
+  adminJobsList: "adminListJobs",
+  adminJobRetry: "adminRetryJob",
+  adminJobRefund: "adminRefundJob",
+  adminJobKindUpdate: "adminUpdateJobKind",
+  adminDocumentMeta: "adminGetDocumentMeta",
 };

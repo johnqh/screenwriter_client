@@ -103,6 +103,8 @@ describe("REST against the real API", () => {
   });
 });
 
+// B15: the server refuses updates outside the document's declared top-level types (spec 03 §3.1 step 2), so these scratch writes use the
+// declared `settings` map instead of an invented root type.
 describe("sync client against the real API", () => {
   let docId = "";
   let projectId = "";
@@ -131,11 +133,11 @@ describe("sync client against the real API", () => {
     expect(sameState(docA, docB)).toBe(true);
 
     // A edit reaches B
-    docA.getMap("scratch").set("k", "from-A");
-    await waitFor("B sees A edit", () => docB.getMap("scratch").get("k") === "from-A");
+    docA.getMap("settings").set("k", "from-A");
+    await waitFor("B sees A edit", () => docB.getMap("settings").get("k") === "from-A");
     // B edit reaches A, and nothing echoes back forever
-    docB.getMap("scratch").set("k2", "from-B");
-    await waitFor("A sees B edit", () => docA.getMap("scratch").get("k2") === "from-B");
+    docB.getMap("settings").set("k2", "from-B");
+    await waitFor("A sees B edit", () => docA.getMap("settings").get("k2") === "from-B");
     await waitFor("acks", () => subA.unackedCount === 0 && subB.unackedCount === 0);
     expect(sameState(docA, docB)).toBe(true);
 
@@ -148,9 +150,9 @@ describe("sync client against the real API", () => {
     const statuses: string[] = [];
     a.on("status", s => statuses.push(s));
     (a as unknown as { ws: WebSocket }).ws.close(4000, "test drop");
-    docB.getMap("scratch").set("while-away", true);
+    docB.getMap("settings").set("while-away", true);
     await waitFor("A reconnected", () => a.status === "connected" && statuses.includes("disconnected"));
-    await waitFor("A caught up", () => docA.getMap("scratch").get("while-away") === true);
+    await waitFor("A caught up", () => docA.getMap("settings").get("while-away") === true);
     expect(sameState(docA, docB)).toBe(true);
 
     // epoch change: opening a snapshot is reported on both clients and they are NOT silently resubscribed
@@ -166,7 +168,7 @@ describe("sync client against the real API", () => {
     expect(eventsB[0]).toMatchObject({ documentId: docId, liveEpoch: 1 });
     expect(subA.state).toBe("stale");
     await waitFor("reconnected after 4409", () => a.status === "connected");
-    docA.getMap("scratch").set("after", "epoch"); // stale doc: must not be sent
+    docA.getMap("settings").set("after", "epoch"); // stale doc: must not be sent
     await new Promise(r => setTimeout(r, 300));
     expect(subA.state).toBe("stale");
     expect(events.length).toBe(1); // reported once, not repeated by the 4409 close
@@ -175,8 +177,8 @@ describe("sync client against the real API", () => {
     const fresh = new Y.Doc();
     const subFresh = a.subscribe(docId, fresh, { epoch: 1 });
     await waitFor("fresh synced", () => subFresh.status === "synced");
-    expect(fresh.getMap("scratch").get("after")).toBeUndefined();
-    expect(fresh.getMap("scratch").get("k")).toBe("from-A"); // restored content is the snapshot's
+    expect(fresh.getMap("settings").get("after")).toBeUndefined();
+    expect(fresh.getMap("settings").get("k")).toBe("from-A"); // restored content is the snapshot's
     void projectId;
   });
 

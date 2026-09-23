@@ -7,3 +7,4 @@ export * from "./network";
 export * from "./sync";
 export * from "./hooks";
 export * from "./util/base64";
+export * from "./util/sha256";

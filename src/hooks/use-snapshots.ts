@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { SnapshotCreateRequest, SnapshotForkRequest } from "@sudobility/screenwriter_types";
+import type {
+  CompareRequest,
+  CursorQuery,
+  SnapshotCommentCreateRequest,
+  SnapshotCreateRequest,
+  SnapshotForkRequest,
+} from "@sudobility/screenwriter_types";
 import { useScreenwriterClient } from "./client-context";
 import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
@@ -85,5 +91,100 @@ export function useForkSnapshot() {
       return client.forkSnapshot(snapshotId, body);
     },
     onSuccess: () => invalidateDocumentLists(qc),
+  });
+}
+
+// ─── B15: prefs, notes, comments, compare ───────────────────────────────────────────────────────────
+
+/** Hide or show a snapshot for the caller: only the document's snapshot list (`hiddenForMe`) changes. */
+export function useSetSnapshotPrefs(did: string) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { snapshotId: string; hidden: boolean }) => client.setSnapshotPrefs(v.snapshotId, v.hidden),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.snapshotsOf(did) }),
+  });
+}
+
+export function useSnapshotNotes(sid: string | undefined) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.snapshotNotes(sid ?? ""),
+    queryFn: () => client.listSnapshotNotes(sid as string),
+    staleTime: STALE_TIMES.LISTS,
+    enabled: !!sid,
+  });
+}
+
+/** Append-only. Refreshes the note list and the snapshot list (`noteCount`). */
+export function useAddSnapshotNote(sid: string, did?: string) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: string) => client.addSnapshotNote(sid, body),
+    onSuccess: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: queryKeys.snapshotNotes(sid) }),
+        did ? qc.invalidateQueries({ queryKey: queryKeys.snapshotsOf(did) }) : undefined,
+      ]),
+  });
+}
+
+export function useSnapshotComments(sid: string | undefined, filters: Partial<CursorQuery> = {}) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.snapshotComments(sid ?? "", filters),
+    queryFn: () => client.listSnapshotComments(sid as string, filters),
+    staleTime: STALE_TIMES.LISTS,
+    enabled: !!sid,
+  });
+}
+
+/** `AnchorNotFoundError` when the anchor does not resolve in the snapshot. */
+export function useAddSnapshotComment(sid: string) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SnapshotCommentCreateRequest) => client.addSnapshotComment(sid, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.snapshotSide(sid) }),
+  });
+}
+
+/** `resolved: true|false`. */
+export function useResolveSnapshotComment(sid: string) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (v: { commentId: string; resolved: boolean }) => client.resolveSnapshotComment(v.commentId, v.resolved),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.snapshotSide(sid) }),
+  });
+}
+
+/** Creates a note in the LIVE document (a write to it): refreshes the comment list and the document family (notes reads). */
+export function useCopyCommentToLive(sid: string, did: string) {
+  const client = useScreenwriterClient();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (commentId: string) => client.copyCommentToLive(commentId),
+    onSuccess: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: queryKeys.snapshotSide(sid) }),
+        qc.invalidateQueries({ queryKey: queryKeys.documentFamily(did) }),
+      ]),
+  });
+}
+
+/**
+ * Element-level diff of two sources. Idle until a request is given. Two immutable sides never change, a `live` side does (the
+ * document family refreshes it). `CompareTooLargeError` is a typed answer, not retried.
+ */
+export function useCompare(did: string | undefined, request: CompareRequest | undefined) {
+  const client = useScreenwriterClient();
+  return useQuery({
+    queryKey: queryKeys.compare(did ?? "", request ?? {}),
+    queryFn: () => client.compare(did as string, request as CompareRequest),
+    staleTime: request && (request.base.kind === "live" || request.target.kind === "live") ? STALE_TIMES.DETAIL : STALE_TIMES.IMMUTABLE,
+    enabled: !!did && !!request,
+    retry: false,
   });
 }

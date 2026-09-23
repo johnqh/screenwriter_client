@@ -5,6 +5,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { spawn, type ChildProcess } from "node:child_process";
+import { AI_CONSENT_VERSION } from "@sudobility/screenwriter_types";
 import {
   ApiError,
   JobKindDisabledError,
@@ -157,6 +158,7 @@ describe("jobs through the client against the real API", () => {
     const me = await c.me();
     const project = await c.createProject(me.personalWorkspaceId, { name: `jobs ${Date.now()}` });
     const doc = await c.createDocument(project.id, { title: "T", kind: "script" });
+    await c.acceptAiConsent({ version: AI_CONSENT_VERSION }); // B17: AI job creation needs consent (spec 06 §9.3 gate 3)
     const started = await c.startAiJob(doc.id, { task: "coverage" });
     const viaJobs = await until(() => c.getJob(started.jobId), j => j.status === "succeeded" || j.status === "failed");
     expect(viaJobs).toMatchObject({ id: started.jobId, kind: "ai.review", subkind: "coverage" });
