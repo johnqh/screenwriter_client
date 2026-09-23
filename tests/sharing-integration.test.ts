@@ -17,8 +17,8 @@ import {
   ShareLinkExpiredError,
   SyncClient,
 } from "../src";
-// The API's own postgres.js: cleanup only (this package has no DB access of its own).
-import postgres from "../../screenwriter_api/node_modules/postgres";
+// postgres.js: cleanup only (this package has no DB access of its own at runtime).
+import postgres from "postgres";
 
 const API_DIR = new URL("../../screenwriter_api/", import.meta.url).pathname;
 const PORT = 19600 + Math.floor(Math.random() * 300);

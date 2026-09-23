@@ -1,6 +1,6 @@
 {
   "name": "@sudobility/screenwriter_client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Network client, react-query hooks and Yjs sync client for Fadewright",
   "type": "module",
   "main": "src/index.ts",
@@ -9,7 +9,8 @@
   "author": "Sudobility",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@sudobility/screenwriter_types": "^0.1.1",
@@ -25,6 +26,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.2",
     "happy-dom": "^20.0.8",
+    "postgres": "^3.4.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3",

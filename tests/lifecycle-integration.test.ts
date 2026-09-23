@@ -15,7 +15,7 @@ import {
   isApplyTemplateJob,
 } from "../src";
 import type { Job } from "@sudobility/screenwriter_types";
-import postgres from "../../screenwriter_api/node_modules/postgres";
+import postgres from "postgres";
 
 const API_DIR = new URL("../../screenwriter_api/", import.meta.url).pathname;
 const PORT = 20800 + Math.floor(Math.random() * 300);
