@@ -1396,11 +1396,12 @@ export class ScreenwriterClient {
 
   /**
    * Built-ins plus the caller's own (`user`) and their workspaces' (`workspace`) templates. `filter` is a category or
-   * `{category?, workspaceId?, scope?}` (`workspaceId` narrows the workspace ones to that workspace).
+   * `{category?, workspaceId?, scope?, locale?}` (`workspaceId` narrows the workspace ones to that workspace;
+   * `locale` narrows built-ins to one BCP-47 language — `user`/`workspace` templates are never filtered by it).
    */
   listTemplates(filter?: string | Partial<TemplateListQuery>) {
     const q: Partial<TemplateListQuery> = typeof filter === "string" ? { category: filter } : (filter ?? {});
-    return this.json<TemplateSummary[]>("GET", "/templates", { category: q.category, workspaceId: q.workspaceId, scope: q.scope });
+    return this.json<TemplateSummary[]>("GET", "/templates", { category: q.category, workspaceId: q.workspaceId, scope: q.scope, locale: q.locale });
   }
   /** Full template body; `idOrKey` is the template id or its built-in key; `version` an older version of a stored template. */
   getTemplate(idOrKey: string, version?: number) {
