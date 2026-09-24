@@ -105,6 +105,15 @@ import {
   type JobOutputsResponse,
   type JobRecipient,
   type AiJobCreated,
+  type AiActionResponse,
+  type GenerateCharacterSkeletonRequest,
+  type GenerateCharacterSkeletonResult,
+  type GenerateScriptRequest,
+  type GenerateScriptResult,
+  type PolishCharacterDialogueRequest,
+  type PolishCharacterDialogueResult,
+  type PolishSceneRequest,
+  type PolishSceneResult,
   type AiJobCreateRequest,
   type AiStatus,
   type ApiKeyCreated,
@@ -1778,6 +1787,26 @@ export class ScreenwriterClient {
     return this.json<AiNoteConvertResponse>("POST", `/documents/${enc(did)}/ai/reports/${enc(jobId)}/notes/${enc(noteId)}/convert`);
   }
 
+  // Synchronous AI actions: the call waits for the model and answers `{ result, usage }`. Errors of note:
+  // 403 `AI_CONSENT_REQUIRED` (accept via `acceptAiConsent`), 402 `INSUFFICIENT_CREDITS`, 429 `RATE_LIMITED` (daily limit),
+  // 503 `AI_UNAVAILABLE`, 502 `AI_OUTPUT_INVALID` / `AI_GENERATION_FAILED` (nothing was charged), 422 `AI_CONTENT_REFUSED`.
+  /** A free-form paragraph about a character -> a structured skeleton (`age` plus whichever fields the text supports). */
+  generateCharacterSkeleton(body: GenerateCharacterSkeletonRequest) {
+    return this.json<AiActionResponse<GenerateCharacterSkeletonResult>>("POST", "/ai/generate-character-skeleton", undefined, body);
+  }
+  /** A story in plain language -> scenes with structured headings and typed elements. Can take a minute. */
+  generateScript(body: GenerateScriptRequest) {
+    return this.json<AiActionResponse<GenerateScriptResult>>("POST", "/ai/generate-script", undefined, body);
+  }
+  /** One character's lines + their skeleton -> the same ids, polished to fit the personality. */
+  polishCharacterDialogue(body: PolishCharacterDialogueRequest) {
+    return this.json<AiActionResponse<PolishCharacterDialogueResult>>("POST", "/ai/polish-character-dialogue", undefined, body);
+  }
+  /** A scene + a skeleton per character -> the scene rewritten (a fresh element list, not a per-id mapping). */
+  polishScene(body: PolishSceneRequest) {
+    return this.json<AiActionResponse<PolishSceneResult>>("POST", "/ai/polish-scene", undefined, body);
+  }
+
   getCreditsBalance() {
     return this.json<ConsumableBalanceResponse>("GET", "/consumables/balance");
   }
@@ -2091,6 +2120,10 @@ export const API_ROUTE_METHODS: Record<ApiRouteName, keyof ScreenwriterClient | 
   apiKeyRevoke: "revokeApiKey",
   // B7 AI
   aiStatus: "getAiStatus",
+  aiGenerateCharacterSkeleton: "generateCharacterSkeleton",
+  aiGenerateScript: "generateScript",
+  aiPolishCharacterDialogue: "polishCharacterDialogue",
+  aiPolishScene: "polishScene",
   aiJobCreate: "startAiJob",
   aiJobsList: "listAiJobs",
   aiJobGet: "getAiJob",

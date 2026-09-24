@@ -151,3 +151,7 @@ tests/                contract, backoff/awareness units, hooks (fake network), i
 ## Related
 
 `../screenwriter_types` (shared types + codec), `../screenwriter_api` (server), `../screenwriter_lib` (F2, will consume this), `../sudojo_client` (convention reference).
+
+## Synchronous AI actions
+
+`generateCharacterSkeleton`, `generateScript`, `polishCharacterDialogue`, `polishScene` (`POST /ai/{action}`, each `{result, usage}`; types in `screenwriter_types` `src/ai/actions.ts`). They wait for the model (scripts can take a minute), so callers should show progress. Note the client's default retry policy also applies (429 and network failures are retried with the same `Idempotency-Key`). Consent is per user: a 403 `AI_CONSENT_REQUIRED` means call `acceptAiConsent` (see `useAiConsent`/`useAcceptAiConsent`) and try again.
