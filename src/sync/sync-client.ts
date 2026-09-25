@@ -1,5 +1,5 @@
 /**
- * Framework-free client for the Fadewright sync WebSocket (spec 03 §2). Uses the global
+ * Framework-free client for the ViaInk sync WebSocket (spec 03 §2). Uses the global
  * `WebSocket`, the shared frame codec from screenwriter_types and V2 Yjs encoding.
  *
  * Epoch changes are *reported*, never handled: on `epochChanged`, `subscribeError EPOCH_MISMATCH`,

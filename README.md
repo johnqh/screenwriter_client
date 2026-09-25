@@ -1,6 +1,6 @@
 # @sudobility/screenwriter_client
 
-Network client for the Fadewright screenwriting app: a typed REST wrapper over an injected `NetworkClient`, react-query hooks, and a framework-free Yjs sync client for the `screenwriter_api` WebSocket.
+Network client for the ViaInk screenwriting app: a typed REST wrapper over an injected `NetworkClient`, react-query hooks, and a framework-free Yjs sync client for the `screenwriter_api` WebSocket.
 
 Local package (not published). Import by path; see `CLAUDE.md` for the tsconfig `paths` needed, including the single-Yjs mapping.
 

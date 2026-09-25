@@ -1,6 +1,6 @@
 /**
  * @sudobility/screenwriter_client
- * REST client (injected NetworkClient), react-query hooks and the Yjs sync client for Fadewright.
+ * REST client (injected NetworkClient), react-query hooks and the Yjs sync client for ViaInk.
  */
 export * from "./errors";
 export * from "./network";

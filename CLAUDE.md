@@ -1,6 +1,6 @@
 # screenwriter_client
 
-Frontend network client library for Fadewright (`screenwriter_api`). Slice F1 of `../screenwriter_plans/plans/2026-09-20-frontend-mvp.md`. Local package: no publishing, no versions, no CI workflow. Consumers import it by path (`tsconfig` `paths` + Vite alias to `../screenwriter_client/src/index.ts`).
+Frontend network client library for ViaInk (`screenwriter_api`). Slice F1 of `../screenwriter_plans/plans/2026-09-20-frontend-mvp.md`. Local package: no publishing, no versions, no CI workflow. Consumers import it by path (`tsconfig` `paths` + Vite alias to `../screenwriter_client/src/index.ts`).
 
 ## Tech stack
 
