@@ -5,29 +5,42 @@ import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
 
 /** The current balance. A purchase or usage (an AI job's charge/refund) changes it, so keep this short-lived. */
-export function useCreditsBalance() {
+export function useCreditsBalance(workspaceId?: string) {
   const client = useScreenwriterClient();
+  const scope = workspaceId ?? client.selectedWorkspaceId();
   return useQuery({
-    queryKey: queryKeys.creditsBalance(),
-    queryFn: () => client.getCreditsBalance(),
+    queryKey: queryKeys.creditsBalance(scope),
+    queryFn: () => client.getCreditsBalance(scope),
     staleTime: 0,
   });
 }
 
-export function useCreditPurchases(query: { limit?: number; offset?: number } = {}) {
+export function useCreditPurchases(
+  query: { limit?: number; offset?: number; workspaceId?: string } = {},
+) {
   const client = useScreenwriterClient();
+  const scoped = {
+    ...query,
+    workspaceId: query.workspaceId ?? client.selectedWorkspaceId(),
+  };
   return useQuery({
-    queryKey: queryKeys.creditPurchases(query),
-    queryFn: () => client.listCreditPurchases(query),
+    queryKey: queryKeys.creditPurchases(scoped),
+    queryFn: () => client.listCreditPurchases(scoped),
     staleTime: STALE_TIMES.LISTS,
   });
 }
 
-export function useCreditUsages(query: { limit?: number; offset?: number } = {}) {
+export function useCreditUsages(
+  query: { limit?: number; offset?: number; workspaceId?: string } = {},
+) {
   const client = useScreenwriterClient();
+  const scoped = {
+    ...query,
+    workspaceId: query.workspaceId ?? client.selectedWorkspaceId(),
+  };
   return useQuery({
-    queryKey: queryKeys.creditUsages(query),
-    queryFn: () => client.listCreditUsages(query),
+    queryKey: queryKeys.creditUsages(scoped),
+    queryFn: () => client.listCreditUsages(scoped),
     staleTime: STALE_TIMES.LISTS,
   });
 }
@@ -47,8 +60,10 @@ export function useCreatePurchaseHandoff() {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: PurchaseHandoffRequest) => client.createPurchaseHandoff(body),
+    mutationFn: (body: PurchaseHandoffRequest) =>
+      client.createPurchaseHandoff(body),
     // the balance may change once the web purchase completes and the RevenueCat webhook lands
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.creditsBalance() }),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: queryKeys.creditsBalances() }),
   });
 }
