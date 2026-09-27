@@ -5,9 +5,9 @@ import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
 
 /** The current balance. A purchase or usage (an AI job's charge/refund) changes it, so keep this short-lived. */
-export function useCreditsBalance(workspaceId?: string) {
+export function useCreditsBalance(entityId?: string) {
   const client = useScreenwriterClient();
-  const scope = workspaceId ?? client.selectedWorkspaceId();
+  const scope = entityId ?? client.selectedEntityId();
   return useQuery({
     queryKey: queryKeys.creditsBalance(scope),
     queryFn: () => client.getCreditsBalance(scope),
@@ -16,12 +16,12 @@ export function useCreditsBalance(workspaceId?: string) {
 }
 
 export function useCreditPurchases(
-  query: { limit?: number; offset?: number; workspaceId?: string } = {},
+    query: { limit?: number; offset?: number; entityId?: string } = {},
 ) {
   const client = useScreenwriterClient();
   const scoped = {
     ...query,
-    workspaceId: query.workspaceId ?? client.selectedWorkspaceId(),
+    entityId: query.entityId ?? client.selectedEntityId(),
   };
   return useQuery({
     queryKey: queryKeys.creditPurchases(scoped),
@@ -31,12 +31,12 @@ export function useCreditPurchases(
 }
 
 export function useCreditUsages(
-  query: { limit?: number; offset?: number; workspaceId?: string } = {},
+    query: { limit?: number; offset?: number; entityId?: string } = {},
 ) {
   const client = useScreenwriterClient();
   const scoped = {
     ...query,
-    workspaceId: query.workspaceId ?? client.selectedWorkspaceId(),
+    entityId: query.entityId ?? client.selectedEntityId(),
   };
   return useQuery({
     queryKey: queryKeys.creditUsages(scoped),

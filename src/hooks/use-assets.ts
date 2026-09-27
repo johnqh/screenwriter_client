@@ -18,7 +18,7 @@ import { useScreenwriterClient } from "./client-context";
 import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
 
-/** `?workspaceId=` (required for a user; a key defaults to its own workspace), `?documentId=`, `?linkedTo=`, `?role=`, `?kind=`, `?q=`, `?origin=`. */
+/** `?entityId=` (required for a user; a key defaults to its own workspace), `?documentId=`, `?linkedTo=`, `?role=`, `?kind=`, `?q=`, `?origin=`. */
 export function useAssets(query: Partial<AssetListQuery> = {}) {
   const client = useScreenwriterClient();
   return useQuery({

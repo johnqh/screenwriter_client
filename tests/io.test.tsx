@@ -109,7 +109,7 @@ describe("B16 routes and methods", () => {
       "POST /imports/upl%202/start",
       "POST /documents/doc_1/exports",
       "POST /documents/export-combined",
-      "POST /workspaces/ws_1/watermark-lookup",
+      "POST /entities/ws_1/watermark-lookup",
     ]);
     expect(sent.every(s => s.req.headers?.["Idempotency-Key"])).toBe(true);
     expect(sent[4]!.body).toMatchObject({ format: "fountain", options: { batchWatermark: { recipients: [{ name: "A" }] } } });
@@ -174,7 +174,7 @@ describe("B16 typed errors", () => {
       "/documents/d/exports": fail(415, "EXPORT_FORMAT_UNSUPPORTED", { format: "pdf", supported: ["fountain", "fdx", "json"] }),
       "/imports/i/start": fail(409, "UPLOAD_INCOMPLETE", { reason: "size" }),
       "/uploads/state": fail(503, "OCR_UNAVAILABLE"),
-      "/workspaces/w/watermark-lookup": fail(404, "WATERMARK_NOT_FOUND", { reason: "pdfNotSupported" }),
+      "/entities/w/watermark-lookup": fail(404, "WATERMARK_NOT_FOUND", { reason: "pdfNotSupported" }),
     };
     const { client } = setup(s => script[s.path] ?? ok({}));
     const sha = "a".repeat(64);
@@ -232,7 +232,7 @@ describe("B16 hooks", () => {
       if (s.path === "/documents/doc_1/exports") return ok(job({ id: "job_7", kind: "export.fountain", status: "succeeded" }), 202);
       if (s.path === "/jobs/job_7") return ok(job({ id: "job_7", kind: "export.fountain", status: "succeeded" }));
       if (s.path === "/jobs/job_7/outputs") return ok({ outputs: [{ name: "a.fountain", mimeType: "text/plain", sizeBytes: 1, url: "data:text/plain,x", expiresAt: null }] });
-      if (s.path === "/workspaces/ws_1/watermark-lookup") return ok({ matches: [{ exportId: "E" }] });
+      if (s.path === "/entities/ws_1/watermark-lookup") return ok({ matches: [{ exportId: "E" }] });
       return ok({});
     });
     const ex = renderHook(() => useExportJob("doc_1"), { wrapper });

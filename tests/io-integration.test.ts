@@ -90,7 +90,7 @@ afterAll(async () => {
   try {
     await db`DELETE FROM audit_log WHERE actor_user_id LIKE ${`clb16-${RUN}-%`}`;
     await db`DELETE FROM idempotency_keys WHERE principal LIKE ${`%clb16-${RUN}-%`}`;
-    await db`DELETE FROM templates WHERE owner_user_id LIKE ${`clb16-${RUN}-%`} OR workspace_id IN (SELECT id FROM workspaces WHERE created_by LIKE ${`clb16-${RUN}-%`})`;
+    await db`DELETE FROM templates WHERE owner_user_id LIKE ${`clb16-${RUN}-%`} OR entity_id IN (SELECT id FROM workspaces WHERE created_by LIKE ${`clb16-${RUN}-%`})`;
     await db`DELETE FROM workspaces WHERE created_by LIKE ${`clb16-${RUN}-%`}`;
     await db`DELETE FROM users WHERE id LIKE ${`clb16-${RUN}-%`}`;
   } finally {
@@ -106,7 +106,7 @@ describe("B16 imports, exports and watermark through the client against the real
 
   beforeAll(async () => {
     await other.me();
-    wid = (await owner.createWorkspace({ name: "IO Client" })).id;
+    wid = (await owner.createManagedEntity({ name: "IO Client" })).id;
     pid = (await owner.createProject(wid, { name: "Feature" })).id;
   }, 30000);
 
@@ -211,10 +211,10 @@ describe("B16 imports, exports and watermark through the client against the real
     const tpl = await owner.getTemplate("screenplay-standard");
     const created = await owner.createTemplate({ scope: "user", template: { ...tpl, name: "Client Tpl" } });
     const file = await owner.exportTemplate(created.id);
-    const made = await owner.createImportJob({ templateTarget: { scope: "workspace", workspaceId: wid }, filename: file.filename, sizeBytes: file.bytes.byteLength, sha256Hex: await sha256Hex(file.bytes) });
+    const made = await owner.createImportJob({ templateTarget: { scope: "entity", entityId: wid }, filename: file.filename, sizeBytes: file.bytes.byteLength, sha256Hex: await sha256Hex(file.bytes) });
     await owner.putUpload(made.upload.url, file.bytes);
     const summary = await owner.importTemplate({ importId: made.importId });
-    expect(summary).toMatchObject({ scope: "workspace", workspaceId: wid, name: "Client Tpl" });
+    expect(summary).toMatchObject({ scope: "entity", entityId: wid, name: "Client Tpl" });
     expect((await owner.importTemplate({ scope: "user", filename: file.filename, bytes: file.bytes })).name).toBe("Client Tpl");
   });
 });

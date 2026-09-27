@@ -13,9 +13,9 @@ import type {
   ShareLinkCreateRequest,
   ShareLinkUpdateRequest,
   ShareTarget,
-  WorkspaceAuditQuery,
-  WorkspaceCreateRequest,
-  WorkspaceUpdateRequest,
+  EntityAuditQuery,
+  EntityCreateRequest,
+  EntityUpdateRequest,
 } from "@sudobility/screenwriter_types";
 import { ApiError } from "../errors";
 import type { ShareLinkTargetRef } from "../network/screenwriter-client";
@@ -25,86 +25,86 @@ import { queryKeys } from "./query-keys";
 
 const invalidateSharing = (qc: QueryClient) =>
   qc.invalidateQueries({ queryKey: queryKeys.sharing() });
-/** A change of role or membership also changes what the caller sees of workspaces, projects and documents. */
+/** A change of role or membership also changes what the caller sees of entities, projects and documents. */
 const invalidateAccess = (qc: QueryClient) =>
   Promise.all([
     invalidateSharing(qc),
-    qc.invalidateQueries({ queryKey: queryKeys.workspaces() }),
+    qc.invalidateQueries({ queryKey: queryKeys.managedEntityList() }),
     qc.invalidateQueries({ queryKey: [...queryKeys.all(), "workspace"] }),
     qc.invalidateQueries({ queryKey: queryKeys.projectLists() }),
     qc.invalidateQueries({ queryKey: queryKeys.projectsAll() }),
     qc.invalidateQueries({ queryKey: queryKeys.documentsAll() }),
   ]);
 
-// ─── workspaces ─────────────────────────────────────────────────────────────
+// ─── entities ─────────────────────────────────────────────────────────────
 
-export function useCreateWorkspace() {
+export function useCreateEntity() {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: WorkspaceCreateRequest) => client.createWorkspace(body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.workspaces() }),
+    mutationFn: (body: EntityCreateRequest) => client.createManagedEntity(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.managedEntityList() }),
   });
 }
 
-export function useUpdateWorkspace(wid: string) {
+export function useUpdateEntity(entityId: string) {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (patch: WorkspaceUpdateRequest) =>
-      client.updateWorkspace(wid, patch),
+    mutationFn: (patch: EntityUpdateRequest) =>
+      client.updateManagedEntity(entityId, patch),
     onSuccess: () =>
       Promise.all([
-        qc.invalidateQueries({ queryKey: queryKeys.workspace(wid) }),
-        qc.invalidateQueries({ queryKey: queryKeys.workspaces() }),
+        qc.invalidateQueries({ queryKey: queryKeys.managedEntityDetails(entityId) }),
+        qc.invalidateQueries({ queryKey: queryKeys.managedEntityList() }),
       ]),
   });
 }
 
-export function useDeleteWorkspace(wid: string) {
+export function useDeleteEntity(entityId: string) {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (confirmName: string) =>
-      client.deleteWorkspace(wid, confirmName),
+      client.deleteManagedEntity(entityId, confirmName),
     onSuccess: () => invalidateAccess(qc),
   });
 }
 
-export function useTransferWorkspace(wid: string) {
+export function useTransferEntity(entityId: string) {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (toUserId: string) => client.transferWorkspace(wid, toUserId),
+    mutationFn: (toUserId: string) => client.transferManagedEntity(entityId, toUserId),
     onSuccess: () => invalidateAccess(qc),
   });
 }
 
-export function useLeaveWorkspace(wid: string) {
+export function useLeaveEntity(entityId: string) {
   const client = useScreenwriterClient();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => client.leaveWorkspace(wid),
+    mutationFn: () => client.leaveManagedEntity(entityId),
     onSuccess: () => invalidateAccess(qc),
   });
 }
 
-export function useWorkspaceUsage(wid: string | undefined) {
+export function useManagedEntityUsage(entityId: string | undefined) {
   const client = useScreenwriterClient();
   return useQuery({
-    queryKey: queryKeys.workspaceUsage(wid ?? ""),
-    queryFn: () => client.getWorkspaceUsage(wid as string),
+    queryKey: queryKeys.managedEntityUsage(entityId ?? ""),
+    queryFn: () => client.getManagedEntityUsage(entityId as string),
     staleTime: STALE_TIMES.LISTS,
-    enabled: !!wid,
+    enabled: !!entityId,
   });
 }
 
 /** Not a query: an audit export is an explicit user action, so it is a mutation that resolves to the CSV text. */
-export function useDownloadWorkspaceAudit(wid: string) {
+export function useDownloadEntityAudit(entityId: string) {
   const client = useScreenwriterClient();
   return useMutation({
-    mutationFn: (range: WorkspaceAuditQuery = {}) =>
-      client.downloadWorkspaceAudit(wid, range),
+    mutationFn: (range: EntityAuditQuery = {}) =>
+      client.downloadEntityAudit(entityId, range),
     gcTime: 0,
   });
 }
@@ -145,16 +145,16 @@ export function useRemoveMember(wid: string) {
 
 // ─── invitations ────────────────────────────────────────────────────────────
 
-export function useWorkspaceInvitations(
-  wid: string | undefined,
+export function useEntityInvitations(
+  entityId: string | undefined,
   query: Partial<CursorQuery> = {},
 ) {
   const client = useScreenwriterClient();
   return useQuery({
-    queryKey: [...queryKeys.workspaceInvitations(wid ?? ""), query],
-    queryFn: () => client.listWorkspaceInvitations(wid as string, query),
+    queryKey: [...queryKeys.entityInvitations(entityId ?? ""), query],
+    queryFn: () => client.listEntityInvitations(entityId as string, query),
     staleTime: STALE_TIMES.LISTS,
-    enabled: !!wid,
+    enabled: !!entityId,
   });
 }
 

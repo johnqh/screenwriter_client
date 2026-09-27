@@ -4,7 +4,7 @@ import { useScreenwriterClient } from "./client-context";
 import { STALE_TIMES } from "./query-config";
 import { queryKeys } from "./query-keys";
 
-/** Search across everything the caller can read (scope with `workspaceId`, `projectId`, `documentId`). Idle for an empty `q`. */
+/** Search across everything the caller can read (scope with `entityId`, `projectId`, `documentId`). Idle for an empty `q`. */
 export function useSearch(query: Partial<SearchQuery> & { q: string }, opts: { enabled?: boolean } = {}) {
   const client = useScreenwriterClient();
   return useQuery({
@@ -15,7 +15,7 @@ export function useSearch(query: Partial<SearchQuery> & { q: string }, opts: { e
   });
 }
 
-export function useWorkspaceSearch(wid: string | undefined, query: Partial<Omit<SearchQuery, "workspaceId">> & { q: string }) {
+export function useWorkspaceSearch(wid: string | undefined, query: Partial<Omit<SearchQuery, "entityId">> & { q: string }) {
   const client = useScreenwriterClient();
   return useQuery({
     queryKey: queryKeys.workspaceSearch(wid ?? "", query),

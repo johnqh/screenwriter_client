@@ -83,11 +83,11 @@ describe("B15 versions, snapshots and sync completion through the client against
   beforeAll(async () => {
     await commenter.me();
     await outsider.me();
-    wid = (await owner.createWorkspace({ name: "History Client" })).id;
+    wid = (await owner.createManagedEntity({ name: "History Client" })).id;
     pid = (await owner.createProject(wid, { name: "Feature" })).id;
     const db = sql();
     try {
-      await db`INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (${wid}, ${U("commenter")}, 'commenter')`;
+      await db`INSERT INTO entity_members (entity_id, user_id, role) VALUES (${wid}, ${U("commenter")}, 'commenter')`;
     } finally {
       await db.end();
     }

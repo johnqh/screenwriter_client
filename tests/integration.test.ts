@@ -80,7 +80,7 @@ describe("REST against the real API", () => {
     expect(templates.length).toBeGreaterThan(0);
     const tpl = templates.find(t => t.builtinKey === "screenplay-standard") ?? templates[0]!;
 
-    const project = await rest.createProject(me.personalWorkspaceId, { name: `client-test ${Date.now()}` });
+    const project = await rest.createProject(me.personalEntityId, { name: `client-test ${Date.now()}` });
     const doc = await rest.createDocument(project.id, { title: "Pilot", kind: "script", templateId: tpl.id });
     expect(doc.projectId).toBe(project.id);
 
@@ -113,7 +113,7 @@ describe("sync client against the real API", () => {
 
   beforeAll(async () => {
     const me = await rest.me();
-    const project = await rest.createProject(me.personalWorkspaceId, { name: `sync-test ${Date.now()}` });
+    const project = await rest.createProject(me.personalEntityId, { name: `sync-test ${Date.now()}` });
     projectId = project.id;
     docId = (await rest.createDocument(project.id, { title: "Sync", kind: "script" })).id;
   });

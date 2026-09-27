@@ -80,7 +80,7 @@ beforeAll(async () => {
     await new Promise(r => setTimeout(r, 100));
   }
   await c.me();
-  wid = (await c.listWorkspaces()).items[0]!.id;
+  wid = (await c.listManagedEntities()).items[0]!.id;
   const pid = (await c.createProject(wid, { name: "B10 client" })).id;
   did = (await c.importDocument(pid, { filename: "lab.fdx", bytes: new TextEncoder().encode(FDX) })).document.id;
   // an import has no entity records until SmartType harvests them (the app runs this after import)

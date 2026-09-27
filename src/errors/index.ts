@@ -313,14 +313,14 @@ export class StaleWriteError extends ApiError {
   }
 }
 
-/** 409 `OWNS_TEAM_WORKSPACE` (`DELETE /me`): transfer these team workspaces first (`details.workspaces`). */
+/** 409 `OWNS_TEAM_WORKSPACE` (`DELETE /me`): transfer these team entities first (`details.entities`). */
 export class OwnsTeamWorkspaceError extends ApiError {
   override readonly name: string = "OwnsTeamWorkspaceError";
   constructor(message: string, status: number, details?: Record<string, unknown>) {
     super(message, "OWNS_TEAM_WORKSPACE", status, details);
   }
-  get workspaces(): { id: string; name: string; members: number }[] {
-    return (this.details?.workspaces as { id: string; name: string; members: number }[] | undefined) ?? [];
+  get entities(): { id: string; name: string; members: number }[] {
+    return (this.details?.entities as { id: string; name: string; members: number }[] | undefined) ?? [];
   }
 }
 

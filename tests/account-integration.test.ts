@@ -78,10 +78,10 @@ describe("B13 against the real API", () => {
   beforeAll(async () => {
     await owner.me();
     await viewer.me();
-    wid = (await owner.listWorkspaces()).items[0]!.id;
+    wid = (await owner.listManagedEntities()).items[0]!.id;
     const db = sql();
     try {
-      await db`INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (${wid}, ${U("viewer")}, 'viewer')`;
+      await db`INSERT INTO entity_members (entity_id, user_id, role) VALUES (${wid}, ${U("viewer")}, 'viewer')`;
     } finally {
       await db.end();
     }
@@ -213,17 +213,17 @@ describe("B13 against the real API", () => {
     const mate = mk(U("mate"));
     await boss.me();
     await mate.me();
-    const team = await boss.createWorkspace({ name: "Crew" });
+    const team = await boss.createManagedEntity({ name: "Crew" });
     const db = sql();
     try {
-      await db`INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (${team.id}, ${U("mate")}, 'writer')`;
+      await db`INSERT INTO entity_members (entity_id, user_id, role) VALUES (${team.id}, ${U("mate")}, 'writer')`;
     } finally {
       await db.end();
     }
     const err = await boss.deleteAccount().then(() => null, e => e);
     expect(err).toBeInstanceOf(OwnsTeamWorkspaceError);
-    expect((err as OwnsTeamWorkspaceError).workspaces).toEqual([{ id: team.id, name: "Crew", members: 2 }]);
-    await boss.transferWorkspace(team.id, U("mate"));
+    expect((err as OwnsTeamWorkspaceError).entities).toEqual([{ id: team.id, name: "Crew", members: 2 }]);
+    await boss.transferManagedEntity(team.id, U("mate"));
     const r = await boss.deleteAccount();
     expect(Date.parse(r.deletionScheduledFor)).toBeGreaterThan(Date.now() + 29 * 86_400_000);
     expect((await boss.me()).deletionScheduledFor).toBe(r.deletionScheduledFor);

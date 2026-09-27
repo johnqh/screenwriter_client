@@ -48,9 +48,9 @@ describe("hooks", () => {
     create.result.current.mutate({ name: "Alpha" });
     await waitFor(() => expect(list.result.current.data?.items.map(p => p.name)).toEqual(["Alpha"]));
     expect(calls).toEqual([
-      "GET /api/v1/workspaces/ws_1/projects",
-      "POST /api/v1/workspaces/ws_1/projects",
-      "GET /api/v1/workspaces/ws_1/projects",
+      "GET /api/v1/entities/ws_1/projects",
+      "POST /api/v1/entities/ws_1/projects",
+      "GET /api/v1/entities/ws_1/projects",
     ]);
   });
 });
@@ -118,7 +118,7 @@ describe("API key hooks", () => {
     const list = renderHook(() => useApiKeys(), { wrapper });
     await waitFor(() => expect(list.result.current.data).toEqual([]));
     const create = renderHook(() => useCreateApiKey(), { wrapper });
-    create.result.current.mutate({ name: "n", workspaceId: "ws_1", scope: "read" });
+    create.result.current.mutate({ name: "n", entityId: "ws_1", scope: "read" });
     await waitFor(() => expect(create.result.current.data?.key).toBe("fwk_abcd1234_secret"));
     await waitFor(() => expect(list.result.current.data).toHaveLength(1));
     expect(JSON.stringify(list.result.current.data)).not.toContain("secret");

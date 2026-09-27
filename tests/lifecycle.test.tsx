@@ -94,7 +94,7 @@ describe("B14 client methods hit the documented routes", () => {
     await client.purgeDocument("doc_1");
     await client.duplicateDocument("doc_1", { title: "Copy", includeSnapshots: true });
     await client.applyTemplate("doc_1", { templateId: "tpl_1", templateVersion: 2, mapping: { st_a: "st_b" }, dryRun: true });
-    await client.createTemplate({ scope: "workspace", workspaceId: "ws_1", template: { name: "T" } as never });
+    await client.createTemplate({ scope: "entity", entityId: "ws_1", template: { name: "T" } as never });
     await client.createTemplateVersion("tpl_1", { name: "T2" } as never);
     await client.updateTemplate("tpl_1", { name: "Renamed", category: "custom" });
     await client.deleteTemplate("tpl_1");
@@ -109,15 +109,15 @@ describe("B14 client methods hit the documented routes", () => {
     await client.updateContact("ctc_1", { company: "Zed" });
     await client.deleteContact("ctc_1");
     await client.listTemplates("screenplay");
-    await client.listTemplates({ workspaceId: "ws_1", scope: "workspace" });
+    await client.listTemplates({ entityId: "ws_1", scope: "entity" });
     await client.getTemplate("tpl_1", 2);
     await client.getTemplate("screenplay-standard");
 
     const line = (c: Call) => `${c.method} ${c.path}`;
     expect(calls.map(line)).toEqual([
-      "GET /workspaces/ws_1/documents",
-      "GET /workspaces/ws_1/trash",
-      "POST /workspaces/ws_1/trash/empty",
+      "GET /entities/ws_1/documents",
+      "GET /entities/ws_1/trash",
+      "POST /entities/ws_1/trash/empty",
       "DELETE /projects/prj_1",
       "POST /projects/prj_1/duplicate",
       "POST /projects/prj_1/folders",
@@ -137,11 +137,11 @@ describe("B14 client methods hit the documented routes", () => {
       "GET /projects/prj_1/bin",
       "POST /projects/prj_1/bin",
       "DELETE /project-bin-items/bin_1",
-      "GET /workspaces/ws_1/defaults",
-      "GET /workspaces/ws_1/contacts",
-      "POST /workspaces/ws_1/contacts",
-      "PATCH /workspace-contacts/ctc_1",
-      "DELETE /workspace-contacts/ctc_1",
+      "GET /entities/ws_1/defaults",
+      "GET /entities/ws_1/contacts",
+      "POST /entities/ws_1/contacts",
+      "PATCH /entity-contacts/ctc_1",
+      "DELETE /entity-contacts/ctc_1",
       "GET /templates",
       "GET /templates",
       "GET /templates/tpl_1",
@@ -159,7 +159,7 @@ describe("B14 client methods hit the documented routes", () => {
     expect(calls[9]!.body).toEqual({ targetProjectId: "prj_2", folderId: null });
     expect(calls[11]!.body).toEqual({ title: "Copy", includeSnapshots: true });
     expect(calls[12]!.body).toEqual({ templateId: "tpl_1", templateVersion: 2, mapping: { st_a: "st_b" }, dryRun: true });
-    expect(calls[13]!.body).toEqual({ scope: "workspace", workspaceId: "ws_1", template: { name: "T" } });
+    expect(calls[13]!.body).toEqual({ scope: "entity", entityId: "ws_1", template: { name: "T" } });
     expect(calls[14]!.body).toEqual({ template: { name: "T2" } }); // the version body is wrapped
     expect(calls[17]!.body).toEqual({ scope: "user", filename: "a.fwtemplate.json", contentB64: btoa("{}") });
     expect(calls[18]!.query).toEqual({ format: "fwtemplate", version: "2" });
@@ -167,7 +167,7 @@ describe("B14 client methods hit the documented routes", () => {
     expect(calls[23]!.query).toEqual({ q: "zed", limit: "5" });
     expect(calls[24]!.body).toEqual({ contacts: [{ name: "Zoe", email: "z@x.co" }] });
     expect(calls[27]!.query).toEqual({ category: "screenplay" });
-    expect(calls[28]!.query).toEqual({ workspaceId: "ws_1", scope: "workspace" });
+    expect(calls[28]!.query).toEqual({ entityId: "ws_1", scope: "entity" });
     expect(calls[29]!.query).toEqual({ version: "2" });
     expect(calls[30]!.query).toEqual({});
     // POSTs carry an Idempotency-Key (creates are retried safely), reads and DELETEs do not need one
@@ -227,7 +227,7 @@ describe("setWorkspaceDefaults", () => {
     const { network, calls } = fake(c => (c.method === "GET" ? defaults({ tagCategories: [{ key: "a" }], worksheets: [{ id: "w" }], defaultProjectRole: "writer" }) : defaults({ ...(c.body as object), updatedAt: T1 })));
     const { client } = setup(network);
     const r = await client.setWorkspaceDefaults("ws_1", { noteTypes: [{ key: "todo" }], worksheets: null });
-    expect(calls.map(c => `${c.method} ${c.path}`)).toEqual(["GET /workspaces/ws_1/defaults", "PUT /workspaces/ws_1/defaults"]);
+    expect(calls.map(c => `${c.method} ${c.path}`)).toEqual(["GET /entities/ws_1/defaults", "PUT /entities/ws_1/defaults"]);
     expect(calls[1]!.body).toEqual({
       tagCategories: [{ key: "a" }],
       revisionColourSets: [],
@@ -269,10 +269,10 @@ describe("hooks", () => {
     const { network, calls } = fake(c => (c.method === "GET" ? [] : { id: "tpl_1", latestVersion: 2 }));
     const { qc, wrapper } = setup(network);
     const all = renderHook(() => useTemplates(), { wrapper });
-    const ws = renderHook(() => useTemplates({ scope: "workspace", workspaceId: "ws_1" }), { wrapper });
+    const ws = renderHook(() => useTemplates({ scope: "entity", entityId: "ws_1" }), { wrapper });
     const cat = renderHook(() => useTemplates("screenplay"), { wrapper });
     await waitFor(() => expect(all.result.current.isSuccess && ws.result.current.isSuccess && cat.result.current.isSuccess).toBe(true));
-    expect(qc.getQueryData(queryKeys.templates({ scope: "workspace", workspaceId: "ws_1" }))).toEqual([]);
+    expect(qc.getQueryData(queryKeys.templates({ scope: "entity", entityId: "ws_1" }))).toEqual([]);
     expect(qc.getQueryData(queryKeys.templates("screenplay"))).toEqual([]);
     expect(qc.getQueryData(queryKeys.templates())).toEqual([]);
     const before = calls.length;
@@ -298,32 +298,32 @@ describe("hooks", () => {
       await purge.result.current.mutateAsync("doc_1");
     });
     await waitFor(() => expect(gets()).toBeGreaterThan(n)); // trash + workspace documents refetched
-    expect(calls.filter(c => c.path === "/workspaces/ws_1/trash").length).toBeGreaterThanOrEqual(2);
-    expect(calls.filter(c => c.path === "/workspaces/ws_1/documents").length).toBeGreaterThanOrEqual(2);
+    expect(calls.filter(c => c.path === "/entities/ws_1/trash").length).toBeGreaterThanOrEqual(2);
+    expect(calls.filter(c => c.path === "/entities/ws_1/documents").length).toBeGreaterThanOrEqual(2);
 
-    n = calls.filter(c => c.path === "/workspaces/ws_1/trash").length;
+    n = calls.filter(c => c.path === "/entities/ws_1/trash").length;
     const project = renderHook(() => usePurgeProject(), { wrapper });
     await act(async () => {
       await project.result.current.mutateAsync({ pid: "prj_1", confirmName: "X" });
     });
-    await waitFor(() => expect(calls.filter(c => c.path === "/workspaces/ws_1/trash").length).toBeGreaterThan(n));
+    await waitFor(() => expect(calls.filter(c => c.path === "/entities/ws_1/trash").length).toBeGreaterThan(n));
     expect(calls.find(c => c.method === "DELETE" && c.path === "/projects/prj_1")!.body).toEqual({ confirmName: "X" });
 
-    n = calls.filter(c => c.path === "/workspaces/ws_1/trash").length;
+    n = calls.filter(c => c.path === "/entities/ws_1/trash").length;
     const empty = renderHook(() => useEmptyTrash("ws_1"), { wrapper });
     await act(async () => {
       await empty.result.current.mutateAsync();
     });
-    await waitFor(() => expect(calls.filter(c => c.path === "/workspaces/ws_1/trash").length).toBeGreaterThan(n));
-    expect(calls.find(c => c.path === "/workspaces/ws_1/trash/empty")!.body).toEqual({ confirm: "EMPTY" });
+    await waitFor(() => expect(calls.filter(c => c.path === "/entities/ws_1/trash").length).toBeGreaterThan(n));
+    expect(calls.find(c => c.path === "/entities/ws_1/trash/empty")!.body).toEqual({ confirm: "EMPTY" });
 
     // trashing a document (B2 hook) now refreshes the trash too
-    n = calls.filter(c => c.path === "/workspaces/ws_1/trash").length;
+    n = calls.filter(c => c.path === "/entities/ws_1/trash").length;
     const trashDoc = renderHook(() => useTrashDocument(), { wrapper });
     await act(async () => {
       await trashDoc.result.current.mutateAsync("doc_9");
     });
-    await waitFor(() => expect(calls.filter(c => c.path === "/workspaces/ws_1/trash").length).toBeGreaterThan(n));
+    await waitFor(() => expect(calls.filter(c => c.path === "/entities/ws_1/trash").length).toBeGreaterThan(n));
   });
 
   it("move refreshes document lists and the document; folder delete refreshes the project", async () => {
@@ -332,11 +332,11 @@ describe("hooks", () => {
     const docs = renderHook(() => useWorkspaceDocuments("ws_1"), { wrapper });
     await waitFor(() => expect(docs.result.current.isSuccess).toBe(true));
     const move = renderHook(() => useMoveDocument("doc_1"), { wrapper });
-    const n = calls.filter(c => c.path === "/workspaces/ws_1/documents").length;
+    const n = calls.filter(c => c.path === "/entities/ws_1/documents").length;
     await act(async () => {
       await move.result.current.mutateAsync({ targetProjectId: "prj_2" });
     });
-    await waitFor(() => expect(calls.filter(c => c.path === "/workspaces/ws_1/documents").length).toBeGreaterThan(n));
+    await waitFor(() => expect(calls.filter(c => c.path === "/entities/ws_1/documents").length).toBeGreaterThan(n));
     const del = renderHook(() => useDeleteFolder("prj_1"), { wrapper });
     await act(async () => {
       await del.result.current.mutateAsync({ fid: "pfd_1", moveContentsTo: "root" });

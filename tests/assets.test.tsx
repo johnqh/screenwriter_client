@@ -61,7 +61,7 @@ function setup(handler: (s: Sent) => NetworkResponse | Promise<NetworkResponse>)
 }
 
 const assetSummary = (over: object = {}) => ({
-  id: "asset_1", workspaceId: "ws_1", kind: "image", title: "a.png", description: "", currentVersionId: "asv_1", versionCount: 1,
+  id: "asset_1", entityId: "ws_1", kind: "image", title: "a.png", description: "", currentVersionId: "asv_1", versionCount: 1,
   mime: "image/png", sizeBytes: 30, status: "ready", origin: "upload", rights: { ownership: "unknown", aiTrainingAllowed: false },
   hasThumbnail: false, createdBy: "u1", createdAt: "2026-01-01T00:00:00Z", updatedAt: "2026-01-01T00:00:00Z", deletedAt: null, ...over,
 });
@@ -89,7 +89,7 @@ describe("B11 routes and methods", () => {
 
   it("each method sends its request with an Idempotency-Key (writes) and returns unwrapped data", async () => {
     const { client, sent } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 0, parts: [], expiresAt: "z", deduplicated: false }, 201);
+      if (s.path === "/entities/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 0, parts: [], expiresAt: "z", deduplicated: false }, 201);
       if (s.path === "/assets/uploads/upl_1") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, completedParts: [], expiresAt: "z", completedAt: null });
       if (s.path === "/assets/uploads/upl_1/parts") return ok({ parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }] });
       if (s.path === "/assets/uploads/upl_1/complete") return ok(assetSummary());
@@ -100,14 +100,14 @@ describe("B11 routes and methods", () => {
       if (s.path === "/documents/doc_1/asset-links") return ok([]);
       if (s.path === "/documents/doc_1/staleness") return ok([{ targetKind: "scene", targetId: "el_1", fresh: 1, stale: 0, deleted: 0 }]);
       if (s.path === "/asset-links/al_1/staleness") return ok({ staleness: "fresh" });
-      if (s.path.startsWith("/asset-links")) return ok({ id: "al_1", workspaceId: "ws_1", assetId: "asset_1", pinnedVersionId: null, documentId: "doc_1", targetKind: "entity", targetId: "ent_1", role: "headshot", sortOrder: 0, sourceHash: null, sourceSnapshotId: null, originalTargetId: null, note: "", createdBy: "u1", createdAt: "z", deletedAt: null }, 201);
+      if (s.path.startsWith("/asset-links")) return ok({ id: "al_1", entityId: "ws_1", assetId: "asset_1", pinnedVersionId: null, documentId: "doc_1", targetKind: "entity", targetId: "ent_1", role: "headshot", sortOrder: 0, sourceHash: null, sourceSnapshotId: null, originalTargetId: null, note: "", createdBy: "u1", createdAt: "z", deletedAt: null }, 201);
       return fail(404, "NOT_FOUND");
     });
     expect((await client.initAssetUpload("ws_1", { filename: "a.png", mimeType: "image/png", sizeBytes: 3, kind: "image" })).uploadId).toBe("upl_1");
     expect((await client.getAssetUpload("upl_1")).partCount).toBe(1);
     expect((await client.signAssetUploadParts("upl_1", [1])).parts).toHaveLength(1);
     expect((await client.completeAssetUpload("upl_1", { parts: [] })).id).toBe("asset_1");
-    expect((await client.listAssets({ workspaceId: "ws_1" })).items).toHaveLength(1);
+    expect((await client.listAssets({ entityId: "ws_1" })).items).toHaveLength(1);
     expect((await client.getAsset("asset_1")).id).toBe("asset_1");
     expect((await client.getAssetUrl("asset_1", "asv_1")).url).toBe("http://x/dl");
     expect((await client.updateAsset("asset_1", { title: "New" })).id).toBe("asset_1");
@@ -143,7 +143,7 @@ describe("B11 typed errors", () => {
       "/assets/uploads/x/complete": fail(415, "ASSET_TYPE_REJECTED", { reason: "magic" }),
       "/assets/y/versions/v/url": fail(409, "ASSET_NOT_READY", { reason: "noDerivative" }),
       "/assets/z": fail(409, "ASSET_IN_USE"),
-      "/workspaces/w/assets/uploads": fail(507, "STORAGE_QUOTA_EXCEEDED", { quotaBytes: 10, usedBytes: 9, requestedBytes: 5 }),
+      "/entities/w/assets/uploads": fail(507, "STORAGE_QUOTA_EXCEEDED", { quotaBytes: 10, usedBytes: 9, requestedBytes: 5 }),
       "/asset-links": fail(422, "ROLE_NOT_ALLOWED_FOR_TARGET", { role: "headshot", allowed: ["entity"] }),
     };
     const { client } = setup(s => script[s.path] ?? ok({}));
@@ -169,7 +169,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
   it("single-part: hashes small files up front, PUTs the one part, completes", async () => {
     const bytes = new Uint8Array([1, 2, 3, 4, 5]);
     const { client, sent } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
+      if (s.path === "/entities/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
       if (s.method === "PUT") return { status: 200, headers: { etag: '"e1"' }, body: new Uint8Array() };
       if (s.path === "/assets/uploads/upl_1/complete") return ok(assetSummary());
       return fail(404, "NOT_FOUND");
@@ -177,7 +177,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
     const progress: number[] = [];
     const asset = await client.uploadAsset("ws_1", new Blob([bytes], { type: "image/png" }), { kind: "image", onProgress: f => progress.push(f) });
     expect(asset.id).toBe("asset_1");
-    expect(sent.map(s => `${s.method} ${s.path}`)).toEqual(["POST /workspaces/ws_1/assets/uploads", "PUT /p1", "POST /assets/uploads/upl_1/complete"]);
+    expect(sent.map(s => `${s.method} ${s.path}`)).toEqual(["POST /entities/ws_1/assets/uploads", "PUT /p1", "POST /assets/uploads/upl_1/complete"]);
     expect(sent[0]!.body).toMatchObject({ filename: "upload", mimeType: "image/png", sizeBytes: 5, kind: "image" });
     expect((sent[0]!.body as { sha256Hex: string }).sha256Hex).toMatch(/^[0-9a-f]{64}$/); // small file: hashed up front
     expect(sent[2]!.body).toMatchObject({ parts: [{ partNumber: 1, etag: "e1" }] });
@@ -189,7 +189,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
     const bytes = new Uint8Array(25).map((_, i) => i); // 25 bytes, part size 10 -> parts of 10,10,5
     const puts: { url: string; body: Uint8Array }[] = [];
     const { client, sent } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") {
+      if (s.path === "/entities/ws_1/assets/uploads") {
         return ok({
           uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 10, partCount: 3,
           parts: [1, 2, 3].map(n => ({ partNumber: n, url: `http://x/p${n}`, expiresAt: "z" })),
@@ -217,7 +217,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
   it("a part that never recovers throws AssetUploadInterruptedError with the uploadId to resume", async () => {
     const bytes = new Uint8Array(10);
     const { client } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") {
+      if (s.path === "/entities/ws_1/assets/uploads") {
         return ok({ uploadId: "upl_bad", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 10, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
       }
       if (s.method === "PUT") return fail(500, "INTERNAL");
@@ -253,7 +253,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
     const asset = await client.uploadAsset("ws_1", new Blob([bytes]), { kind: "data", resumeUploadId: "upl_r", onProgress: f => progress.push(f) });
     expect(asset.id).toBe("asset_1");
     expect(puts).toEqual(["/p3"]); // only the missing part was uploaded
-    expect(sent.some(s => s.path === "/workspaces/ws_1/assets/uploads")).toBe(false); // no fresh init on resume
+    expect(sent.some(s => s.path === "/entities/ws_1/assets/uploads")).toBe(false); // no fresh init on resume
     const complete = sent.find(s => s.path === "/assets/uploads/upl_r/complete")!;
     expect((complete.body as { parts: { partNumber: number }[] }).parts.map(p => p.partNumber).sort()).toEqual([1, 2, 3]);
     expect(progress[0]).toBe(0);
@@ -263,7 +263,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
 
   it("a deduplicated init sends no parts and completes immediately", async () => {
     const { client, sent } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 0, parts: [], expiresAt: "z", deduplicated: true }, 201);
+      if (s.path === "/entities/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 0, parts: [], expiresAt: "z", deduplicated: true }, 201);
       if (s.path === "/assets/uploads/upl_1/complete") return ok(assetSummary());
       return fail(404, "NOT_FOUND");
     });
@@ -278,7 +278,7 @@ describe("B11 uploadAsset (the multipart helper)", () => {
     vi.stubGlobal("fetch", fetchMock);
     try {
       const { client, sent } = setup(s => {
-        if (s.path === "/workspaces/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
+        if (s.path === "/entities/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
         if (s.method === "PUT") return { status: 200, headers: { etag: '"e1"' }, body: new Uint8Array() };
         if (s.path === "/assets/uploads/upl_1/complete") return ok(assetSummary());
         return fail(404, "NOT_FOUND");
@@ -304,7 +304,7 @@ describe("B11 hooks", () => {
       if (s.method === "DELETE") return ok({ deletedAt: "z" });
       return fail(404, "NOT_FOUND");
     });
-    const list = renderHook(() => useAssets({ workspaceId: "ws_1" }), { wrapper });
+    const list = renderHook(() => useAssets({ entityId: "ws_1" }), { wrapper });
     await waitFor(() => expect(list.result.current.data?.items).toHaveLength(1));
     const one = renderHook(() => useAsset("asset_1"), { wrapper });
     await waitFor(() => expect(one.result.current.data?.id).toBe("asset_1"));
@@ -327,7 +327,7 @@ describe("B11 hooks", () => {
 
   it("useUploadAsset tracks live progress and invalidates the asset lists on success", async () => {
     const { wrapper, qc } = setup(s => {
-      if (s.path === "/workspaces/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
+      if (s.path === "/entities/ws_1/assets/uploads") return ok({ uploadId: "upl_1", assetId: "asset_1", versionId: "asv_1", partSizeBytes: 8_000_000, partCount: 1, parts: [{ partNumber: 1, url: "http://x/p1", expiresAt: "z" }], expiresAt: "z", deduplicated: false }, 201);
       if (s.method === "PUT") return { status: 200, headers: { etag: '"e1"' }, body: new Uint8Array() };
       if (s.path === "/assets/uploads/upl_1/complete") return ok(assetSummary());
       return fail(404, "NOT_FOUND");

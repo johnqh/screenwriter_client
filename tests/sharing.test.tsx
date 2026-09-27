@@ -129,7 +129,7 @@ describe("methods and dispatchers", () => {
   it("map onto the routes", async () => {
     const { calls, client } = fake();
     const c = client();
-    await c.inviteMember({ type: "workspace", id: "ws_1" }, { email: "a@b.co", role: "viewer" });
+    await c.inviteMember({ type: "entity", id: "ws_1" }, { email: "a@b.co", role: "viewer" });
     await c.inviteMember({ type: "project", id: "prj_1" }, { email: "a@b.co", role: "writer" });
     await c.inviteMember({ type: "document", id: "doc_1" }, { email: "a@b.co", role: "commenter" });
     await c.createShareLink({ type: "document", id: "doc_1" }, { access: "view" });
@@ -145,13 +145,13 @@ describe("methods and dispatchers", () => {
     await c.removeGrant("grt_1");
     await c.updateMemberRole("ws_1", "u2", "admin");
     await c.removeMember("ws_1", "u2");
-    await c.deleteWorkspace("ws_1", "Name");
-    await c.transferWorkspace("ws_1", "u2");
+    await c.deleteManagedEntity("ws_1", "Name");
+    await c.transferManagedEntity("ws_1", "u2");
     await c.acceptInvitation("tok");
     await c.declineInvitation("inv_1");
     await c.listSharedWithMe({ limit: 5 });
     expect(calls.map(r => `${r.method} ${r.path}${r.query}`)).toEqual([
-      "POST /workspaces/ws_1/invitations",
+      "POST /entities/ws_1/invitations",
       "POST /projects/prj_1/invitations",
       "POST /documents/doc_1/invitations",
       "POST /documents/doc_1/share-links",
@@ -165,10 +165,10 @@ describe("methods and dispatchers", () => {
       "DELETE /share-links/shl_1",
       "PATCH /grants/grt_1",
       "DELETE /grants/grt_1",
-      "PATCH /workspaces/ws_1/members/u2",
-      "DELETE /workspaces/ws_1/members/u2",
-      "DELETE /workspaces/ws_1",
-      "POST /workspaces/ws_1/transfer",
+      "PATCH /entities/ws_1/members/u2",
+      "DELETE /entities/ws_1/members/u2",
+      "DELETE /entities/ws_1",
+      "POST /entities/ws_1/transfer",
       "POST /invitations/accept",
       "POST /invitations/inv_1/decline",
       "GET /me/shared?limit=5",
@@ -177,7 +177,7 @@ describe("methods and dispatchers", () => {
     expect(calls[18]!.body).toEqual({ token: "tok" });
   });
 
-  it("downloadWorkspaceAudit returns the CSV text and passes the range", async () => {
+  it("downloadEntityAudit returns the CSV text and passes the range", async () => {
     const calls: string[] = [];
     const network: NetworkClient = {
       async request(req) {
@@ -186,8 +186,8 @@ describe("methods and dispatchers", () => {
       },
     };
     const c = new ScreenwriterClient({ network, baseUrl: "http://x", getToken: async () => "t" });
-    expect(await c.downloadWorkspaceAudit("ws_1", { from: "2026-01-01T00:00:00Z", to: "2026-02-01T00:00:00Z" })).toBe("created_at,actor\r\n");
-    expect(calls[0]).toContain("/workspaces/ws_1/audit.csv?from=2026-01-01T00%3A00%3A00Z&to=2026-02-01T00%3A00%3A00Z");
+    expect(await c.downloadEntityAudit("ws_1", { from: "2026-01-01T00:00:00Z", to: "2026-02-01T00:00:00Z" })).toBe("created_at,actor\r\n");
+    expect(calls[0]).toContain("/entities/ws_1/audit.csv?from=2026-01-01T00%3A00%3A00Z&to=2026-02-01T00%3A00%3A00Z");
   });
 });
 
@@ -215,7 +215,7 @@ describe("sharing hooks", () => {
     const upd = renderHook(() => useUpdateMemberRole("ws_1"), { wrapper });
     upd.result.current.mutate({ uid: "u2", role: "writer" });
     await waitFor(() => expect(list.result.current.data?.items[0]!.role).toBe("writer"));
-    expect(calls.filter(c => c.method === "GET" && c.path === "/workspaces/ws_1/members").length).toBeGreaterThanOrEqual(2);
+    expect(calls.filter(c => c.method === "GET" && c.path === "/entities/ws_1/members").length).toBeGreaterThanOrEqual(2);
     // removing invalidates the sharing family too
     const rm = renderHook(() => useRemoveMember("ws_1"), { wrapper });
     rm.result.current.mutate("u2");

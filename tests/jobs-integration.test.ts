@@ -156,7 +156,7 @@ describe("jobs through the client against the real API", () => {
   it("an AI job is the same job through /jobs and /ai/jobs (D21a)", async () => {
     const c = rest();
     const me = await c.me();
-    const project = await c.createProject(me.personalWorkspaceId, { name: `jobs ${Date.now()}` });
+    const project = await c.createProject(me.personalEntityId, { name: `jobs ${Date.now()}` });
     const doc = await c.createDocument(project.id, { title: "T", kind: "script" });
     await c.acceptAiConsent({ version: AI_CONSENT_VERSION }); // B17: AI job creation needs consent (spec 06 §9.3 gate 3)
     const started = await c.startAiJob(doc.id, { task: "coverage" });

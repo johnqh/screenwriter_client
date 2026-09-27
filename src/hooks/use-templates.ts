@@ -12,7 +12,7 @@ import { queryKeys } from "./query-keys";
 
 /**
  * Built-ins, plus (B14) the caller's own `user` templates and the `workspace` ones. `filter` is a category string, or
- * `{category?, workspaceId?, scope?}` to narrow to one workspace or one scope.
+ * `{category?, entityId?, scope?}` to narrow to one workspace or one scope.
  */
 export function useTemplates(filter?: string | Partial<TemplateListQuery>) {
   const client = useScreenwriterClient();

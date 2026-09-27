@@ -99,10 +99,10 @@ describe("B14 against the real API", () => {
     await owner.me();
     await admin.me();
     await writer.me();
-    wid = (await owner.createWorkspace({ name: "B14 team" })).id;
+    wid = (await owner.createManagedEntity({ name: "B14 team" })).id;
     const db = sql();
     try {
-      await db`INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (${wid}, ${U("admin")}, 'admin'), (${wid}, ${U("writer")}, 'writer')`;
+      await db`INSERT INTO entity_members (entity_id, user_id, role) VALUES (${wid}, ${U("admin")}, 'admin'), (${wid}, ${U("writer")}, 'writer')`;
     } finally {
       await db.end();
     }
@@ -173,7 +173,7 @@ describe("B14 against the real API", () => {
     // move between projects of the workspace, refused across workspaces
     const moved = await owner.moveDocument(first.id, { targetProjectId: pid });
     expect(moved.projectId).toBe(pid);
-    const other = await owner.createWorkspace({ name: "B14 other" });
+    const other = await owner.createManagedEntity({ name: "B14 other" });
     const elsewhere = await owner.createProject(other.id, { name: "Elsewhere" });
     await expect(owner.moveDocument(first.id, { targetProjectId: elsewhere.id })).rejects.toMatchObject({ code: "MOVE_FORBIDDEN", status: 403 });
     const dup = await owner.duplicateDocument(first.id, { title: "1x01 copy" });
@@ -189,8 +189,8 @@ describe("B14 against the real API", () => {
   it("editing a workspace template changes no existing document until each applies it (F-TPL-007)", async () => {
     const base = await owner.getTemplate("screenplay-standard");
     const named = (n: string) => ({ ...base, styles: base.styles.map(s => (s.id === "st_action" ? { ...s, name: n } : s)) });
-    const tpl = await writer.createTemplate({ scope: "workspace", workspaceId: wid, template: named("Action A") });
-    expect(tpl).toMatchObject({ scope: "workspace", workspaceId: wid, latestVersion: 1 });
+    const tpl = await writer.createTemplate({ scope: "entity", entityId: wid, template: named("Action A") });
+    expect(tpl).toMatchObject({ scope: "entity", entityId: wid, latestVersion: 1 });
     const d1 = await owner.createDocument(pid, { title: "Uses A 1", kind: "script", templateId: tpl.id });
     const d2 = await owner.createDocument(pid, { title: "Uses A 2", kind: "script", templateId: tpl.id });
     const actionName = async (id: string) => (await owner.getDocumentContent(id)).template.styles.find(s => s.id === "st_action")!.name;
@@ -272,12 +272,12 @@ describe("B14 against the real API", () => {
     const doc = await owner.createDocument(pid, { title: "Link me", kind: "script" });
     const link = await owner.createDocumentShareLink(doc.id, { access: "view" });
     expect((await owner.resolveShareLink(link.token)).targetType).toBe("document");
-    await admin.updateWorkspace(wid, { allowPublicLinks: false });
+    await admin.updateManagedEntity(wid, { allowPublicLinks: false });
     const err = await owner.resolveShareLink(link.token).catch(e => e);
     expect(err).toBeInstanceOf(ShareLinkExpiredError);
     expect((err as ShareLinkExpiredError).reason).toBe("disabled");
     await expect(owner.createDocumentShareLink(doc.id, { access: "view" })).rejects.toMatchObject({ status: 403 });
-    await admin.updateWorkspace(wid, { allowPublicLinks: true });
+    await admin.updateManagedEntity(wid, { allowPublicLinks: true });
     expect((await owner.resolveShareLink(link.token)).targetType).toBe("document");
   }, 60000);
 

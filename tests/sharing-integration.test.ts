@@ -104,20 +104,20 @@ describe("B8 against the real API", () => {
   beforeAll(async () => {
     await viewer.me();
     await stranger.me();
-    wid = (await owner.createWorkspace({ name: "Room" })).id;
+    wid = (await owner.createManagedEntity({ name: "Room" })).id;
     pid = (await owner.createProject(wid, { name: "Show" })).id;
     did = (await owner.createDocument(pid, { title: "Pilot", kind: "script" })).id;
   });
 
   it("invite -> accept -> the viewer cannot edit (RoleInsufficientError names the role that can) -> upgrade -> can", async () => {
     const email = `${U("viewer")}@x.co`;
-    const inv = await owner.inviteMember({ type: "workspace", id: wid }, { email, role: "viewer" });
+    const inv = await owner.inviteMember({ type: "entity", id: wid }, { email, role: "viewer" });
     expect(inv).toMatchObject({ status: "pending", role: "viewer", targetName: "Room" });
-    expect(JSON.stringify(inv)).not.toContain(inviteToken(email, "workspace"));
+    expect(JSON.stringify(inv)).not.toContain(inviteToken(email, "entity"));
     expect((await viewer.listMyInvitations()).map(i => i.id)).toContain(inv.id);
-    await expect(stranger.acceptInvitation(inviteToken(email, "workspace"))).rejects.toMatchObject({ code: "EMAIL_MISMATCH" });
-    expect(await viewer.acceptInvitation(inviteToken(email, "workspace"))).toEqual({ workspaceId: wid });
-    await expect(viewer.acceptInvitation(inviteToken(email, "workspace"))).rejects.toMatchObject({ code: "INVITATION_CLOSED", status: 410 });
+    await expect(stranger.acceptInvitation(inviteToken(email, "entity"))).rejects.toMatchObject({ code: "EMAIL_MISMATCH" });
+    expect(await viewer.acceptInvitation(inviteToken(email, "entity"))).toEqual({ entityId: wid });
+    await expect(viewer.acceptInvitation(inviteToken(email, "entity"))).rejects.toMatchObject({ code: "INVITATION_CLOSED", status: 410 });
 
     expect((await viewer.getDocument(did)).role).toBe("viewer");
     const err = await viewer.applyCommands(did, cmd("nope")).catch(e => e);
@@ -157,8 +157,8 @@ describe("B8 against the real API", () => {
     sync.disconnect();
     // re-add for the tests below
     const email = `${U("viewer")}@x.co`;
-    await owner.inviteMember({ type: "workspace", id: wid }, { email, role: "viewer" });
-    await viewer.acceptInvitation(inviteToken(email, "workspace"));
+    await owner.inviteMember({ type: "entity", id: wid }, { email, role: "viewer" });
+    await viewer.acceptInvitation(inviteToken(email, "entity"));
   });
 
   it("public mode: a signed-out visitor reads through the link; view cannot comment; comment needs sign-in; revoking fails the URL at once", async () => {
@@ -239,29 +239,29 @@ describe("B8 against the real API", () => {
     await owner.unlockDocument(d);
     expect((await owner.getDocumentState(d)).state.byteLength).toBeGreaterThan(0);
 
-    const personal = (await owner.me()).personalWorkspaceId;
-    const key = await owner.createApiKey({ name: "k", workspaceId: personal, scope: "read_write" });
+    const personal = (await owner.me()).personalEntityId;
+    const key = await owner.createApiKey({ name: "k", entityId: personal, scope: "read_write" });
     const keyClient = new ScreenwriterClient({ network: createFetchNetworkClient(), baseUrl: BASE, getToken: async () => key.key });
     const bound = await keyClient.getDocument(did).catch(e => e);
     expect(bound.status).toBe(404); // the team's document is outside the key's workspace
-    expect((await keyClient.listWorkspaces()).items.map(w => w.id)).toEqual([personal]);
+    expect((await keyClient.listManagedEntities()).items.map(w => w.id)).toEqual([personal]);
     await expect(keyClient.lockDocument(did)).rejects.toMatchObject({ code: "API_KEY_FORBIDDEN" });
   });
 
   it("workspace lifecycle: usage, audit CSV, transfer, leave, delete", async () => {
-    const w = await owner.createWorkspace({ name: "Temp" });
-    expect(await owner.getWorkspaceUsage(w.id)).toMatchObject({ documentCount: 0, assetCount: 0 });
+    const w = await owner.createManagedEntity({ name: "Temp" });
+    expect(await owner.getManagedEntityUsage(w.id)).toMatchObject({ documentCount: 0, assetCount: 0 });
     const email = `${U("viewer")}@x.co`;
-    await owner.inviteMember({ type: "workspace", id: w.id }, { email, role: "admin" });
-    await viewer.acceptInvitation(inviteToken(email, "workspace"));
-    const csv = await owner.downloadWorkspaceAudit(w.id);
+    await owner.inviteMember({ type: "entity", id: w.id }, { email, role: "admin" });
+    await viewer.acceptInvitation(inviteToken(email, "entity"));
+    const csv = await owner.downloadEntityAudit(w.id);
     expect(csv.split("\r\n")[0]).toBe("created_at,actor,action,target_type,target_id,ip");
     expect(csv).toContain("invitation.accept");
-    await expect(owner.leaveWorkspace(w.id)).rejects.toMatchObject({ code: "LAST_OWNER" });
-    await owner.transferWorkspace(w.id, U("viewer"));
-    expect((await owner.leaveWorkspace(w.id))).toEqual({ left: true });
-    await expect(viewer.deleteWorkspace(w.id, "nope")).rejects.toMatchObject({ code: "CONFIRMATION_MISMATCH" });
-    expect((await viewer.deleteWorkspace(w.id, "Temp")).deletedAt).toBeTruthy();
-    expect((await viewer.listWorkspaces()).items.map(x => x.id)).not.toContain(w.id);
+    await expect(owner.leaveManagedEntity(w.id)).rejects.toMatchObject({ code: "LAST_OWNER" });
+    await owner.transferManagedEntity(w.id, U("viewer"));
+    expect((await owner.leaveManagedEntity(w.id))).toEqual({ left: true });
+    await expect(viewer.deleteManagedEntity(w.id, "nope")).rejects.toMatchObject({ code: "CONFIRMATION_MISMATCH" });
+    expect((await viewer.deleteManagedEntity(w.id, "Temp")).deletedAt).toBeTruthy();
+    expect((await viewer.listManagedEntities()).items.map(x => x.id)).not.toContain(w.id);
   });
 });

@@ -8,8 +8,8 @@ export const queryKeys = {
   all: root,
   me: () => [...root(), "me"] as const,
 
-  workspaces: () => [...root(), "workspaces"] as const,
-  workspace: (wid: string) => [...root(), "workspace", wid] as const,
+  managedEntityList: () => [...root(), "entities"] as const,
+  managedEntityDetails: (entityId: string) => [...root(), "entity", entityId] as const,
 
   projectLists: () => [...root(), "project-lists"] as const,
   projects: (wid: string, filters?: object) =>
@@ -187,7 +187,7 @@ export const queryKeys = {
 
   formats: () => [...root(), "formats"] as const,
 
-  /** `filter` is a category string or `{category?, workspaceId?, scope?}` (B14: user and workspace templates). */
+  /** `filter` is a category string or `{category?, entityId?, scope?}` (B14: user and workspace templates). */
   templates: (filter?: string | object) =>
     [...root(), "templates", filter ?? null] as const,
   templatesAll: () => [...root(), "templates"] as const,
@@ -224,14 +224,14 @@ export const queryKeys = {
 
   /**
    * Tenancy and sharing (B8). Everything sits under `sharing` so one invalidation refreshes a whole sharing dialog;
-   * a role or membership change should also refresh `workspaces()` and the document family.
+   * a role or membership change should also refresh `entities()` and the document family.
    */
   sharing: () => [...root(), "sharing"] as const,
   members: (wid: string) => [...root(), "sharing", "members", wid] as const,
-  workspaceUsage: (wid: string) =>
-    [...root(), "sharing", "usage", wid] as const,
-  workspaceInvitations: (wid: string) =>
-    [...root(), "sharing", "workspace-invitations", wid] as const,
+  managedEntityUsage: (entityId: string) =>
+    [...root(), "sharing", "usage", entityId] as const,
+  entityInvitations: (entityId: string) =>
+    [...root(), "sharing", "entity-invitations", entityId] as const,
   myInvitations: () => [...root(), "sharing", "my-invitations"] as const,
   sharedWithMe: () => [...root(), "sharing", "shared-with-me"] as const,
   grants: (t: { type: string; id: string }) =>

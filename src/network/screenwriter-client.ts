@@ -210,12 +210,12 @@ import {
   type ShareUnlockResponse,
   type SharedItem,
   type UnlockSession,
-  type Workspace,
-  type WorkspaceAuditQuery,
-  type WorkspaceCreateRequest,
-  type WorkspaceDeleteResponse,
-  type WorkspaceUpdateRequest,
-  type WorkspaceUsage,
+  type ManagedEntity,
+  type EntityAuditQuery,
+  type EntityCreateRequest,
+  type EntityDeleteResponse,
+  type EntityUpdateRequest,
+  type EntityUsageOverview,
   type CommandBatchRequest,
   type CommandBatchResponse,
   type CursorQuery,
@@ -266,8 +266,8 @@ import {
   type VersionListItem,
   type VersionRestoreResponse,
   type VersionSnapshotRequest,
-  type WorkspaceDetail,
-  type WorkspaceListItem,
+  type ManagedEntityDetail,
+  type ManagedEntityListItem,
   // B12 collaboration, notifications, devices, email
   type ActivityEvent,
   type ActivityQuery,
@@ -336,8 +336,8 @@ export interface ScreenwriterClientOptions {
    * Return null when signed out.
    */
   getToken: (forceRefresh?: boolean) => Promise<string | null>;
-  /** Selected workspace used by workspace-scoped credit actions. */
-  getSelectedWorkspaceId?: () => string | null;
+  /** Selected entity used by entity-scoped credit actions. */
+  getSelectedEntityId?: () => string | null;
   /** Sent as `X-Client` on every request, e.g. `web/1.4.0` (`fadewright-mcp/<v>` marks MCP command origins). */
   clientTag?: string;
   /**
@@ -641,8 +641,8 @@ export class ScreenwriterClient {
             : auth.bearer;
       if (token) headers.Authorization = `Bearer ${token}`;
       if (this.opts.clientTag) headers["X-Client"] = this.opts.clientTag;
-      const workspaceId = this.opts.getSelectedWorkspaceId?.();
-      if (workspaceId) headers["X-Workspace-Id"] = workspaceId;
+      const entityId = this.opts.getSelectedEntityId?.();
+      if (entityId) headers["X-Entity-Id"] = entityId;
       if (unlock) headers["X-Doc-Unlock"] = unlock;
       if (idemKey) headers["Idempotency-Key"] = idemKey;
       if (payload !== undefined) {
@@ -803,50 +803,50 @@ export class ScreenwriterClient {
     return this.json<Me>("PATCH", "/me", undefined, patch);
   }
 
-  // ─── workspaces ──────────────────────────────────────────────────────────
+  // ─── entities ──────────────────────────────────────────────────────────
 
-  listWorkspaces() {
-    return this.json<Paginated<WorkspaceListItem>>("GET", "/workspaces");
+  listManagedEntities() {
+    return this.json<Paginated<ManagedEntityListItem>>("GET", "/entities");
   }
-  getWorkspace(wid: string) {
-    return this.json<WorkspaceDetail>("GET", `/workspaces/${enc(wid)}`);
+  getEntityDetails(entityId: string) {
+    return this.json<ManagedEntityDetail>("GET", `/entities/${enc(entityId)}`);
   }
   /** A team workspace with the caller as its owner (409 `LIMIT_EXCEEDED` past 50 owned teams). */
-  createWorkspace(body: WorkspaceCreateRequest) {
-    return this.json<Workspace>("POST", "/workspaces", undefined, body);
+  createManagedEntity(body: EntityCreateRequest) {
+    return this.json<ManagedEntity>("POST", "/entities", undefined, body);
   }
-  updateWorkspace(wid: string, patch: WorkspaceUpdateRequest) {
-    return this.json<Workspace>(
+  updateManagedEntity(entityId: string, patch: EntityUpdateRequest) {
+    return this.json<ManagedEntity>(
       "PATCH",
-      `/workspaces/${enc(wid)}`,
+      `/entities/${enc(entityId)}`,
       undefined,
       patch,
     );
   }
   /** Soft delete; `confirmName` must equal the workspace name (400 `CONFIRMATION_MISMATCH`). */
-  deleteWorkspace(wid: string, confirmName: string) {
-    return this.json<WorkspaceDeleteResponse>(
+  deleteManagedEntity(entityId: string, confirmName: string) {
+    return this.json<EntityDeleteResponse>(
       "DELETE",
-      `/workspaces/${enc(wid)}`,
+      `/entities/${enc(entityId)}`,
       undefined,
       { confirmName },
     );
   }
   /** Make another member the owner; the caller becomes an admin. */
-  transferWorkspace(wid: string, toUserId: string) {
-    return this.json<Workspace>(
+  transferManagedEntity(entityId: string, toUserId: string) {
+    return this.json<ManagedEntity>(
       "POST",
-      `/workspaces/${enc(wid)}/transfer`,
+      `/entities/${enc(entityId)}/transfer`,
       undefined,
       { toUserId },
     );
   }
   /** 409 `LAST_OWNER` for the sole owner. */
-  leaveWorkspace(wid: string) {
-    return this.json<{ left: true }>("POST", `/workspaces/${enc(wid)}/leave`);
+  leaveManagedEntity(entityId: string) {
+    return this.json<{ left: true }>("POST", `/entities/${enc(entityId)}/leave`);
   }
-  getWorkspaceUsage(wid: string) {
-    return this.json<WorkspaceUsage>("GET", `/workspaces/${enc(wid)}/usage`);
+  getManagedEntityUsage(entityId: string) {
+    return this.json<EntityUsageOverview>("GET", `/entities/${enc(entityId)}/usage`);
   }
   /** Documents across the workspace's projects; `starred` is the caller's own stars, `label` a document label. */
   listWorkspaceDocuments(
@@ -855,7 +855,7 @@ export class ScreenwriterClient {
   ) {
     return this.json<Paginated<DocumentMeta>>(
       "GET",
-      `/workspaces/${enc(wid)}/documents`,
+      `/entities/${enc(wid)}/documents`,
       query,
     );
   }
@@ -863,7 +863,7 @@ export class ScreenwriterClient {
   listTrash(wid: string, query: Partial<CursorQuery> = {}) {
     return this.json<Paginated<TrashItem>>(
       "GET",
-      `/workspaces/${enc(wid)}/trash`,
+      `/entities/${enc(wid)}/trash`,
       query,
     );
   }
@@ -871,7 +871,7 @@ export class ScreenwriterClient {
   emptyTrash(wid: string) {
     return this.json<Job>(
       "POST",
-      `/workspaces/${enc(wid)}/trash/empty`,
+      `/entities/${enc(wid)}/trash/empty`,
       undefined,
       { confirm: "EMPTY" },
     );
@@ -879,7 +879,7 @@ export class ScreenwriterClient {
   getWorkspaceDefaults(wid: string) {
     return this.json<WorkspaceDefaults>(
       "GET",
-      `/workspaces/${enc(wid)}/defaults`,
+      `/entities/${enc(wid)}/defaults`,
     );
   }
   /**
@@ -901,7 +901,7 @@ export class ScreenwriterClient {
       try {
         return await this.json<WorkspaceDefaults>(
           "PUT",
-          `/workspaces/${enc(wid)}/defaults`,
+          `/entities/${enc(wid)}/defaults`,
           undefined,
           {
             ...next,
@@ -922,7 +922,7 @@ export class ScreenwriterClient {
   listContacts(wid: string, query: Partial<WorkspaceContactsQuery> = {}) {
     return this.json<Paginated<WorkspaceContact>>(
       "GET",
-      `/workspaces/${enc(wid)}/contacts`,
+      `/entities/${enc(wid)}/contacts`,
       query,
     );
   }
@@ -933,7 +933,7 @@ export class ScreenwriterClient {
   ) {
     return this.json<WorkspaceContact[]>(
       "POST",
-      `/workspaces/${enc(wid)}/contacts`,
+      `/entities/${enc(wid)}/contacts`,
       undefined,
       { contacts },
     );
@@ -941,7 +941,7 @@ export class ScreenwriterClient {
   updateContact(cid: string, patch: WorkspaceContactPatchRequest) {
     return this.json<WorkspaceContact>(
       "PATCH",
-      `/workspace-contacts/${enc(cid)}`,
+      `/entity-contacts/${enc(cid)}`,
       undefined,
       patch,
     );
@@ -949,15 +949,15 @@ export class ScreenwriterClient {
   deleteContact(cid: string) {
     return this.json<WorkspaceContactDeleteResponse>(
       "DELETE",
-      `/workspace-contacts/${enc(cid)}`,
+      `/entity-contacts/${enc(cid)}`,
     );
   }
   /** The audit log as CSV text (owner/admin; range at most one year). */
-  async downloadWorkspaceAudit(
+  async downloadEntityAudit(
     wid: string,
-    range: WorkspaceAuditQuery = {},
+    range: EntityAuditQuery = {},
   ): Promise<string> {
-    const res = await this.send("GET", `/workspaces/${enc(wid)}/audit.csv`, {
+    const res = await this.send("GET", `/entities/${enc(wid)}/audit.csv`, {
       from: range.from,
       to: range.to,
     });
@@ -970,7 +970,7 @@ export class ScreenwriterClient {
   listMembers(wid: string, query: Partial<CursorQuery> = {}) {
     return this.json<Paginated<Member>>(
       "GET",
-      `/workspaces/${enc(wid)}/members`,
+      `/entities/${enc(wid)}/members`,
       query,
     );
   }
@@ -978,7 +978,7 @@ export class ScreenwriterClient {
   updateMemberRole(wid: string, uid: string, role: Role) {
     return this.json<Member>(
       "PATCH",
-      `/workspaces/${enc(wid)}/members/${enc(uid)}`,
+      `/entities/${enc(wid)}/members/${enc(uid)}`,
       undefined,
       { role },
     );
@@ -986,14 +986,14 @@ export class ScreenwriterClient {
   removeMember(wid: string, uid: string) {
     return this.json<{ removed: true }>(
       "DELETE",
-      `/workspaces/${enc(wid)}/members/${enc(uid)}`,
+      `/entities/${enc(wid)}/members/${enc(uid)}`,
     );
   }
   /** Invite by email. The response never holds the token: it travels by email (slice B12). */
-  inviteToWorkspace(wid: string, body: InvitationCreateRequest) {
+  inviteToEntity(entityId: string, body: InvitationCreateRequest) {
     return this.json<Invitation>(
       "POST",
-      `/workspaces/${enc(wid)}/invitations`,
+      `/entities/${enc(entityId)}/invitations`,
       undefined,
       body,
     );
@@ -1016,16 +1016,16 @@ export class ScreenwriterClient {
   }
   /** One entry point for the three invitation routes. */
   inviteMember(target: ShareTarget, body: InvitationCreateRequest) {
-    return target.type === "workspace"
-      ? this.inviteToWorkspace(target.id, body)
+    return target.type === "entity"
+      ? this.inviteToEntity(target.id, body)
       : target.type === "project"
         ? this.inviteToProject(target.id, body)
         : this.inviteToDocument(target.id, body);
   }
-  listWorkspaceInvitations(wid: string, query: Partial<CursorQuery> = {}) {
+  listEntityInvitations(entityId: string, query: Partial<CursorQuery> = {}) {
     return this.json<Paginated<Invitation>>(
       "GET",
-      `/workspaces/${enc(wid)}/invitations`,
+      `/entities/${enc(entityId)}/invitations`,
       query,
     );
   }
@@ -1061,7 +1061,7 @@ export class ScreenwriterClient {
       `/invitations/${enc(iid)}/decline`,
     );
   }
-  /** Projects and documents shared with the caller through grants (outside their own workspaces). */
+  /** Projects and documents shared with the caller through grants (outside their own entities). */
   listSharedWithMe(query: Partial<CursorQuery> = {}) {
     return this.json<Paginated<SharedItem>>("GET", "/me/shared", query);
   }
@@ -1227,14 +1227,14 @@ export class ScreenwriterClient {
   ) {
     return this.json<Paginated<ProjectSummary>>(
       "GET",
-      `/workspaces/${enc(wid)}/projects`,
+      `/entities/${enc(wid)}/projects`,
       query,
     );
   }
   createProject(wid: string, body: ProjectCreateRequest) {
     return this.json<ProjectSummary>(
       "POST",
-      `/workspaces/${enc(wid)}/projects`,
+      `/entities/${enc(wid)}/projects`,
       undefined,
       body,
     );
@@ -1371,7 +1371,7 @@ export class ScreenwriterClient {
       `/documents/${enc(did)}`,
     );
   }
-  /** Another project of the same workspace (403 `MOVE_FORBIDDEN` across workspaces). Omit `folderId` for the project root. */
+  /** Another project of the same workspace (403 `MOVE_FORBIDDEN` across entities). Omit `folderId` for the project root. */
   moveDocument(did: string, body: DocumentMoveRequest) {
     return this.json<DocumentMeta>(
       "POST",
@@ -1615,7 +1615,7 @@ export class ScreenwriterClient {
     );
   }
 
-  /** Full-text search across the caller's readable documents (scope with `workspaceId`, `projectId` or `documentId`). */
+  /** Full-text search across the caller's readable documents (scope with `entityId`, `projectId` or `documentId`). */
   search(query: Partial<SearchQuery> & { q: string }) {
     const { types, styleIds, ...rest } = query;
     return this.json<Paginated<SearchHit>>("GET", "/search", {
@@ -1626,12 +1626,12 @@ export class ScreenwriterClient {
   }
   searchWorkspace(
     wid: string,
-    query: Partial<Omit<SearchQuery, "workspaceId">> & { q: string },
+    query: Partial<Omit<SearchQuery, "entityId">> & { q: string },
   ) {
     const { types, styleIds, ...rest } = query;
     return this.json<Paginated<SearchHit>>(
       "GET",
-      `/workspaces/${enc(wid)}/search`,
+      `/entities/${enc(wid)}/search`,
       { ...rest, types: types?.join(","), styleIds: styleIds?.join(",") },
     );
   }
@@ -1802,7 +1802,7 @@ export class ScreenwriterClient {
   lookupWatermark(wid: string, body: WatermarkLookupRequest) {
     return this.json<WatermarkLookupResponse>(
       "POST",
-      `/workspaces/${enc(wid)}/watermark-lookup`,
+      `/entities/${enc(wid)}/watermark-lookup`,
       undefined,
       body,
     );
@@ -1904,7 +1904,7 @@ export class ScreenwriterClient {
   initAssetUpload(wid: string, body: AssetUploadRequest) {
     return this.json<AssetUploadInit>(
       "POST",
-      `/workspaces/${enc(wid)}/assets/uploads`,
+      `/entities/${enc(wid)}/assets/uploads`,
       undefined,
       body,
     );
@@ -1941,7 +1941,7 @@ export class ScreenwriterClient {
       `/assets/uploads/${enc(uploadId)}`,
     );
   }
-  /** `?workspaceId=` is required for a user (a key defaults to its own workspace). */
+  /** `?entityId=` is required for a user (a key defaults to its own workspace). */
   listAssets(query: Partial<AssetListQuery> = {}) {
     return this.json<Paginated<AssetListItem>>(
       "GET",
@@ -2189,8 +2189,8 @@ export class ScreenwriterClient {
   // ─── templates ───────────────────────────────────────────────────────────
 
   /**
-   * Built-ins plus the caller's own (`user`) and their workspaces' (`workspace`) templates. `filter` is a category or
-   * `{category?, workspaceId?, scope?, locale?}` (`workspaceId` narrows the workspace ones to that workspace;
+   * Built-ins plus the caller's own (`user`) and their entities' (`workspace`) templates. `filter` is a category or
+   * `{category?, entityId?, scope?, locale?}` (`entityId` narrows the workspace ones to that workspace;
    * `locale` narrows built-ins to one BCP-47 language — `user`/`workspace` templates are never filtered by it).
    */
   listTemplates(filter?: string | Partial<TemplateListQuery>) {
@@ -2198,7 +2198,7 @@ export class ScreenwriterClient {
       typeof filter === "string" ? { category: filter } : (filter ?? {});
     return this.json<TemplateSummary[]>("GET", "/templates", {
       category: q.category,
-      workspaceId: q.workspaceId,
+      entityId: q.entityId,
       scope: q.scope,
       locale: q.locale,
     });
@@ -2593,7 +2593,7 @@ export class ScreenwriterClient {
   }
   /**
    * Schedules the account for deletion (30-day grace, `restoreAccount` cancels). Needs a sign-in within 5 minutes
-   * (`ReauthRequiredError`) and no team workspace the person solely owns (`OwnsTeamWorkspaceError`, `.workspaces`).
+   * (`ReauthRequiredError`) and no team workspace the person solely owns (`OwnsTeamWorkspaceError`, `.entities`).
    */
   deleteAccount() {
     return this.json<AccountDeleteResponse>("DELETE", "/me", undefined, {
@@ -2793,7 +2793,7 @@ export class ScreenwriterClient {
   ) {
     return this.json<Paginated<AiActivityItem & { userId: string }>>(
       "GET",
-      `/workspaces/${enc(wid)}/ai-activity`,
+      `/entities/${enc(wid)}/ai-activity`,
       query as Query,
     );
   }
@@ -2870,18 +2870,18 @@ export class ScreenwriterClient {
     );
   }
 
-  selectedWorkspaceId(): string | undefined {
-    return this.opts.getSelectedWorkspaceId?.() ?? undefined;
+  selectedEntityId(): string | undefined {
+    return this.opts.getSelectedEntityId?.() ?? undefined;
   }
-  getCreditsBalance(workspaceId?: string) {
+  getCreditsBalance(entityId?: string) {
     return this.json<ConsumableBalanceResponse>(
       "GET",
       "/consumables/balance",
-      workspaceId ? { workspaceId } : undefined,
+      entityId ? { entityId } : undefined,
     );
   }
   listCreditPurchases(
-    query: { limit?: number; offset?: number; workspaceId?: string } = {},
+    query: { limit?: number; offset?: number; entityId?: string } = {},
   ) {
     return this.json<ConsumablePurchaseRecord[]>(
       "GET",
@@ -2890,7 +2890,7 @@ export class ScreenwriterClient {
     );
   }
   listCreditUsages(
-    query: { limit?: number; offset?: number; workspaceId?: string } = {},
+    query: { limit?: number; offset?: number; entityId?: string } = {},
   ) {
     return this.json<ConsumableUsageRecord[]>(
       "GET",
@@ -2898,20 +2898,20 @@ export class ScreenwriterClient {
       query as Query,
     );
   }
-  setCreditPurchaseTarget(workspaceId: string) {
+  setCreditPurchaseTarget(entityId: string) {
     return this.json<{ ok: boolean }>(
       "POST",
       "/consumables/purchase-target",
       undefined,
-      { workspaceId },
+      { entityId },
     );
   }
-  redeemCreditCoupon(code: string, workspaceId?: string) {
+  redeemCreditCoupon(code: string, entityId?: string) {
     return this.json<CreditCouponRedeemResponse>(
       "POST",
       "/consumables/redeem-coupon",
       undefined,
-      { code, ...(workspaceId ? { workspaceId } : {}) },
+      { code, ...(entityId ? { entityId } : {}) },
     );
   }
   listCreditCoupons() {
@@ -3131,7 +3131,7 @@ export class ScreenwriterClient {
   ) {
     return this.json<Paginated<WorkspaceActivityEvent>>(
       "GET",
-      `/workspaces/${enc(wid)}/activity`,
+      `/entities/${enc(wid)}/activity`,
       query as Query,
     );
   }
@@ -3342,8 +3342,8 @@ export const API_ROUTE_METHODS: Record<
   health: "health",
   meGet: "me",
   mePatch: "updateMe",
-  workspacesList: "listWorkspaces",
-  workspaceGet: "getWorkspace",
+  entitiesList: "listManagedEntities",
+  entityGetDetails: "getEntityDetails",
   projectsList: "listProjects",
   projectCreate: "createProject",
   projectGet: "getProject",
@@ -3420,7 +3420,7 @@ export const API_ROUTE_METHODS: Record<
   jobRecipients: "listJobRecipients",
   jobWebhook: null, // provider-to-server call (HMAC): a client never makes it
   // B10 projection reads, search, reports, packets
-  entitiesList: "listEntities",
+  documentEntitiesList: "listEntities",
   entityGet: "getEntity",
   entityUsage: "getEntityUsage",
   entityDialogue: "getEntityDialogue",
@@ -3449,20 +3449,20 @@ export const API_ROUTE_METHODS: Record<
   packetLocation: "getLocationPacket",
   packetShot: "getShotPacket",
   // B8 tenancy, roles, sharing
-  workspaceCreate: "createWorkspace",
-  workspaceUpdate: "updateWorkspace",
-  workspaceDelete: "deleteWorkspace",
-  workspaceTransfer: "transferWorkspace",
-  workspaceLeave: "leaveWorkspace",
-  workspaceUsage: "getWorkspaceUsage",
-  workspaceAudit: "downloadWorkspaceAudit",
+  entityCreate: "createManagedEntity",
+  entityUpdate: "updateManagedEntity",
+  entityDelete: "deleteManagedEntity",
+  entityTransfer: "transferManagedEntity",
+  entityLeave: "leaveManagedEntity",
+  managedEntityUsage: "getManagedEntityUsage",
+  entityAudit: "downloadEntityAudit",
   membersList: "listMembers",
   memberUpdate: "updateMemberRole",
   memberRemove: "removeMember",
-  invitationCreateWorkspace: "inviteToWorkspace",
+  invitationCreateEntity: "inviteToEntity",
   invitationCreateProject: "inviteToProject",
   invitationCreateDocument: "inviteToDocument",
-  workspaceInvitationsList: "listWorkspaceInvitations",
+  entityInvitationsList: "listEntityInvitations",
   myInvitations: "listMyInvitations",
   invitationRenew: "renewInvitation",
   invitationCancel: "cancelInvitation",

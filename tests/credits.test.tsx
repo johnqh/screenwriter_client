@@ -85,7 +85,7 @@ describe("B17 client methods", () => {
     expect(pathOf(sent[0]!)).toBe("/documents/doc_1/ai/estimate");
     expect(sent[0]!.req.method).toBe("POST");
     expect(pathOf(sent[1]!)).toBe("/me/ai-activity?documentId=doc_1");
-    expect(pathOf(sent[2]!)).toBe("/workspaces/ws_1/ai-activity?userId=u1");
+    expect(pathOf(sent[2]!)).toBe("/entities/ws_1/ai-activity?userId=u1");
     expect(pathOf(sent[3]!)).toBe("/documents/doc_1/ai/reports");
     expect(pathOf(sent[4]!)).toBe("/documents/doc_1/ai/reports/job_1");
     expect(pathOf(sent[5]!)).toBe("/documents/doc_1/ai/reports/job_1/notes/strengths%3A0/convert");

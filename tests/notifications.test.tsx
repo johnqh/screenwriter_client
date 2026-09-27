@@ -70,7 +70,7 @@ describe("B12 client methods", () => {
 
   it("listNotifications reads X-Unread-Count; read/delete", async () => {
     const { network, sent } = scripted([
-      ok({ items: [{ id: "ntf_1", kind: "mention", payload: {}, workspaceId: null, documentId: null, readAt: null, createdAt: "2026-01-01T00:00:00Z" }], nextCursor: null }, 200, {
+      ok({ items: [{ id: "ntf_1", kind: "mention", payload: {}, entityId: null, documentId: null, readAt: null, createdAt: "2026-01-01T00:00:00Z" }], nextCursor: null }, 200, {
         "x-unread-count": "3",
       }),
       ok({ updated: 1 }),
@@ -122,7 +122,7 @@ describe("B12 client methods", () => {
     await client.listDocumentActivity("doc_1", { kinds: ["document.created", "snapshot.created"] });
     expect(pathOf(sent[0]!)).toBe("/documents/doc_1/activity?kinds=document.created%2Csnapshot.created");
     await client.listWorkspaceActivity("ws_1", { projectId: "prj_1" });
-    expect(pathOf(sent[1]!)).toBe("/workspaces/ws_1/activity?projectId=prj_1");
+    expect(pathOf(sent[1]!)).toBe("/entities/ws_1/activity?projectId=prj_1");
   });
 
   it("devices: register, update, revoke, push token", async () => {

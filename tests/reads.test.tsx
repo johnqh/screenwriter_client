@@ -130,12 +130,12 @@ describe("B10 client methods hit the documented routes", () => {
   it("search: global, workspace and document; list params are comma-joined", async () => {
     const { network, calls } = fake(() => ({ items: [], nextCursor: null }));
     const { client } = setup(network);
-    await client.search({ q: "ledger", workspaceId: "ws_1", types: ["element", "note"], styleIds: ["st_action"], characterId: "ent_1", language: "en", limit: 5 });
+    await client.search({ q: "ledger", entityId: "ws_1", types: ["element", "note"], styleIds: ["st_action"], characterId: "ent_1", language: "en", limit: 5 });
     await client.searchWorkspace("ws_1", { q: "x", types: ["entity"] });
     await client.searchDocument("doc_1", { q: "a.*b", mode: "regex", styles: ["st_action", "st_dialogue"], characters: ["ent_1"], limit: 10 });
     expect(calls.map(c => [c.path, c.query])).toEqual([
-      ["/api/v1/search", { q: "ledger", workspaceId: "ws_1", types: "element,note", styleIds: "st_action", characterId: "ent_1", language: "en", limit: "5" }],
-      ["/api/v1/workspaces/ws_1/search", { q: "x", types: "entity" }],
+      ["/api/v1/search", { q: "ledger", entityId: "ws_1", types: "element,note", styleIds: "st_action", characterId: "ent_1", language: "en", limit: "5" }],
+      ["/api/v1/entities/ws_1/search", { q: "x", types: "entity" }],
       [`${B}/search`, { q: "a.*b", mode: "regex", styles: "st_action,st_dialogue", characters: "ent_1", limit: "10" }],
     ]);
   });

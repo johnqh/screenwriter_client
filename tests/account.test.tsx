@@ -217,9 +217,9 @@ describe("setMyDocumentState", () => {
 describe("typed errors", () => {
   it("OWNS_TEAM_WORKSPACE, REAUTH_REQUIRED, MACRO_TRIGGER_TAKEN, STALE_WRITE map to subclasses (still ApiError)", async () => {
     const fail = (status: number, code: string, details?: object) => fake(() => ({ __fail: { status, code, details } })).network;
-    const owns = await setup(fail(409, "OWNS_TEAM_WORKSPACE", { workspaces: [{ id: "ws_1", name: "Team", members: 3 }] })).client.deleteAccount().catch(e => e);
+    const owns = await setup(fail(409, "OWNS_TEAM_WORKSPACE", { entities: [{ id: "ws_1", name: "Team", members: 3 }] })).client.deleteAccount().catch(e => e);
     expect(owns).toBeInstanceOf(OwnsTeamWorkspaceError);
-    expect(owns.workspaces).toEqual([{ id: "ws_1", name: "Team", members: 3 }]);
+    expect(owns.entities).toEqual([{ id: "ws_1", name: "Team", members: 3 }]);
     const reauth = await setup(fail(401, "REAUTH_REQUIRED")).client.deleteAccount().catch(e => e);
     expect(reauth).toBeInstanceOf(ReauthRequiredError);
     expect(reauth.status).toBe(401);

@@ -83,7 +83,7 @@ describe("route contract", () => {
   });
 
   it("covers the B8 tenancy and sharing routes", () => {
-    expect(API_ROUTE_METHODS.workspaceCreate).toBe("createWorkspace");
+    expect(API_ROUTE_METHODS.entityCreate).toBe("createManagedEntity");
     expect(API_ROUTE_METHODS.membersList).toBe("listMembers");
     expect(API_ROUTE_METHODS.memberUpdate).toBe("updateMemberRole");
     expect(API_ROUTE_METHODS.invitationAccept).toBe("acceptInvitation");
@@ -109,7 +109,7 @@ describe("route contract", () => {
   });
 
   it("covers the B10 read, search, report and packet routes", () => {
-    expect(API_ROUTE_METHODS.entitiesList).toBe("listEntities");
+    expect(API_ROUTE_METHODS.entitiesList).toBe("listManagedEntities");
     expect(API_ROUTE_METHODS.entityUsage).toBe("getEntityUsage");
     expect(API_ROUTE_METHODS.resolveBatch).toBe("resolveLocators");
     expect(API_ROUTE_METHODS.resolveOne).toBe("resolveLocator");

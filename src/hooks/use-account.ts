@@ -23,22 +23,22 @@ export function useUpdateMe() {
   });
 }
 
-export function useWorkspaces(options: { enabled?: boolean } = {}) {
+export function useManagedEntities(options: { enabled?: boolean } = {}) {
   const client = useScreenwriterClient();
   return useQuery({
-    queryKey: queryKeys.workspaces(),
-    queryFn: () => client.listWorkspaces(),
+    queryKey: queryKeys.managedEntityList(),
+    queryFn: () => client.listManagedEntities(),
     staleTime: STALE_TIMES.WORKSPACES,
     ...options,
   });
 }
 
-export function useWorkspace(wid: string | undefined) {
+export function useEntityDetails(entityId: string | undefined) {
   const client = useScreenwriterClient();
   return useQuery({
-    queryKey: queryKeys.workspace(wid ?? ""),
-    queryFn: () => client.getWorkspace(wid as string),
+    queryKey: queryKeys.managedEntityDetails(entityId ?? ""),
+    queryFn: () => client.getEntityDetails(entityId as string),
     staleTime: STALE_TIMES.WORKSPACES,
-    enabled: !!wid,
+    enabled: !!entityId,
   });
 }
