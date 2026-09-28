@@ -108,6 +108,15 @@ import {
   type AiActionResponse,
   type GenerateCharacterSkeletonRequest,
   type GenerateCharacterSkeletonResult,
+  type SmartPasteCharactersRequest,
+  type SmartPasteCharactersResult,
+  type SmartPastePlotsRequest,
+  type SmartPastePlotsResult,
+  type SmartPasteScriptRequest,
+  type SmartPasteScriptResult,
+  type SceneSummariesResponse,
+  type SuggestNoteFixRequest,
+  type SuggestNoteFixResult,
   type GenerateScriptRequest,
   type GenerateScriptResult,
   type PolishCharacterDialogueRequest,
@@ -2869,6 +2878,50 @@ export class ScreenwriterClient {
       body,
     );
   }
+  // Smart Paste: text read from the clipboard. The result is applied by the caller, as document commands.
+  /** Pasted text -> the characters it describes, each with aliases and one skeleton per life stage. */
+  smartPasteCharacters(body: SmartPasteCharactersRequest) {
+    return this.json<AiActionResponse<SmartPasteCharactersResult>>(
+      "POST",
+      "/ai/smart-paste-characters",
+      undefined,
+      body,
+    );
+  }
+  /** Pasted text -> its main plot and named subplots. */
+  smartPastePlots(body: SmartPastePlotsRequest) {
+    return this.json<AiActionResponse<SmartPastePlotsResult>>(
+      "POST",
+      "/ai/smart-paste-plots",
+      undefined,
+      body,
+    );
+  }
+  /** Pasted text -> the same words formatted as scenes and typed elements. Can take a few minutes. */
+  smartPasteScript(body: SmartPasteScriptRequest) {
+    return this.json<AiActionResponse<SmartPasteScriptResult>>(
+      "POST",
+      "/ai/smart-paste-script",
+      undefined,
+      body,
+    );
+  }
+  /** Which scenes have a summary that can stand in for them when one scene is reviewed on its own. */
+  listSceneSummaries(documentId: string) {
+    return this.json<SceneSummariesResponse>(
+      "GET",
+      `/documents/${encodeURIComponent(documentId)}/ai/scene-summaries`,
+    );
+  }
+  /** A review note + the scene it is about -> up to three alternative fixes, each a set of element edits to apply. */
+  suggestNoteFix(body: SuggestNoteFixRequest) {
+    return this.json<AiActionResponse<SuggestNoteFixResult>>(
+      "POST",
+      "/ai/suggest-note-fix",
+      undefined,
+      body,
+    );
+  }
 
   selectedEntityId(): string | undefined {
     return this.opts.getSelectedEntityId?.() ?? undefined;
@@ -3403,8 +3456,13 @@ export const API_ROUTE_METHODS: Record<
   aiGenerateScript: "generateScript",
   aiPolishCharacterDialogue: "polishCharacterDialogue",
   aiPolishScene: "polishScene",
+  aiSmartPasteCharacters: "smartPasteCharacters",
+  aiSmartPastePlots: "smartPastePlots",
+  aiSmartPasteScript: "smartPasteScript",
+  aiSuggestNoteFix: "suggestNoteFix",
   aiJobCreate: "startAiJob",
   aiJobsList: "listAiJobs",
+  aiSceneSummaries: "listSceneSummaries",
   aiJobGet: "getAiJob",
   aiJobCancel: "cancelAiJob",
   aiSuggestionSetsList: "listSuggestionSets",
